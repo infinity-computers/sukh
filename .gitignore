@@ -1,0 +1,19 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System
+.DS_Store
+Thumbs.db
+
+# Uploads
+public/uploads/
+
+# PHP
+*.log
+
+# Composer
+vendor/
+composer.lock

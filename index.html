@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sukhdham Estate Agency</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ====== HEADER / NAVBAR ====== -->
+    <header>
+        <div class="container nav-container">
+            <div class="logo"><img src="images/logo.svg" alt="Sukhdham Estate Agency" class="logo-img">Sukhdham Estate
+                Agency</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="properties.php">Properties</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">&#9776;</div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ====== HERO SECTION ====== -->
+        <section id="home" class="hero">
+            <div class="hero-slider" data-slider>
+                <img src="images/i1.png" alt="Slide 1" class="slide active">
+                <img src="images/i2.png" alt="Slide 2" class="slide">
+                <img src="images/i7.png" alt="Slide 3" class="slide">
+            </div>
+            <div class="hero-content fade-in">
+                <h1>Find Your Dream Property</h1>
+                <p>Premium real estate services since 1996.</p>
+                <a href="properties.php" class="btn">View Properties</a>
+            </div>
+        </section>
+
+        <!-- ====== STATS COUNTER BAR ====== -->
+        <section class="stats-bar">
+            <div class="stats-container">
+                <div class="stat-item fade-in">
+                    <span class="stat-number" data-target="25">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Years of Experience</span>
+                </div>
+                <div class="stat-item fade-in">
+                    <span class="stat-number" data-target="1000">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Happy Clients</span>
+                </div>
+                <div class="stat-item fade-in">
+                    <span class="stat-number" data-target="500">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Properties Sold</span>
+                </div>
+                <div class="stat-item fade-in">
+                    <span class="stat-number" data-target="15">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Areas Covered</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== FEATURES / PROPERTIES ====== -->
+        <section id="properties" class="section">
+            <div class="section-header fade-in">
+                <h2>Featured Properties</h2>
+                <div class="line"></div>
+            </div>
+            <div class="properties-grid">
+                <div class="property-card fade-in">
+                    <img src="images/i4.png" alt="Property 1">
+                    <div class="info">
+                        <h3>Luxury Apartment</h3>
+                        <p class="location">Ahmedabad</p>
+
+                        <p class="details">3 BHK, modern amenities.</p>
+                    </div>
+                </div>
+                <div class="property-card fade-in">
+                    <img src="images/i9.jpg" alt="Property 2">
+                    <div class="info">
+                        <h3>Commercial Office</h3>
+                        <p class="location">S.G Highway</p>
+
+                        <p class="details">Prime location with parking.</p>
+                    </div>
+                </div>
+                <div class="property-card fade-in">
+                    <img src="images/i8.png" alt="Property 3">
+                    <div class="info">
+                        <h3>Residential Plot</h3>
+                        <p class="location">Bharuch</p>
+
+                        <p class="details">200 sq yd, ready for construction.</p>
+                    </div>
+                </div>
+                <div class="property-card fade-in">
+                    <img src="images/i6.png" alt="Property 4">
+                    <div class="info">
+                        <h3>Premium Villa</h3>
+                        <p class="location">Zadeshwar</p>
+
+                        <p class="details">4 BHK, garden & private parking.</p>
+                    </div>
+                </div>
+                <div class="property-card fade-in">
+                    <img src="images/i1.jpeg" alt="Property 5">
+                    <div class="info">
+                        <h3>Farmhouse Land</h3>
+                        <p class="location">Amod</p>
+
+                        <p class="details">1 acre, ideal for farmhouse project.</p>
+                    </div>
+                </div>
+                <div class="property-card fade-in">
+                    <img src="images/i5.png" alt="Property 6">
+                    <div class="info">
+                        <h3>Industrial Warehouse</h3>
+                        <p class="location">Dahej GIDC</p>
+
+                        <p class="details">5000 sq ft, loading dock included.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== SERVICES ====== -->
+        <section id="services" class="section light-bg">
+            <div class="section-header fade-in">
+                <h2>Our Services</h2>
+                <div class="line"></div>
+            </div>
+            <div class="services-grid">
+                <div class="service-card fade-in">
+                    <img src="images/icon-buy.svg" alt="Buy Property" class="icon">
+                    <h3>Buy Property</h3>
+                    <p>Find the best homes and offices.</p>
+                </div>
+                <div class="service-card fade-in">
+                    <img src="images/icon-sell.svg" alt="Sell Property" class="icon">
+                    <h3>Sell Property</h3>
+                    <p>Get top value with our expertise.</p>
+                </div>
+                <div class="service-card fade-in">
+                    <img src="images/icon-rental.svg" alt="Rental Services" class="icon">
+                    <h3>Rental Services</h3>
+                    <p>Quality rental listings across Gujarat.</p>
+                </div>
+                <div class="service-card fade-in">
+                    <img src="images/icon-consult.svg" alt="Consultation" class="icon">
+                    <h3>Consultation</h3>
+                    <p>Expert advice at every step.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== WHY CHOOSE US ====== -->
+        <section class="section why-choose-section">
+            <div class="section-header fade-in">
+                <h2>Why Choose Us</h2>
+                <div class="line"></div>
+            </div>
+            <div class="why-choose-grid">
+                <div class="why-card fade-in">
+                    <div class="why-icon">🏆</div>
+                    <h3>28 Years of Trust</h3>
+                    <p>Serving the Gujarat real estate market since 1998. Our long-standing reputation is built on
+                        integrity, transparency, and consistent results for every client.</p>
+                </div>
+                <div class="why-card fade-in">
+                    <div class="why-icon">📊</div>
+                    <h3>Expert Market Knowledge</h3>
+                    <p>Deep insight into Bharuch, Zadeshwar, Ankleshwar, Dahej, and 15+ localities. We stay ahead of
+                        market trends to deliver the best deals.</p>
+                </div>
+                <div class="why-card fade-in">
+                    <div class="why-icon">🤝</div>
+                    <h3>Customer-Centric Approach</h3>
+                    <p>We understand that every client is unique. Our customized solutions ensure you get personalized
+                        service from start to finish.</p>
+                </div>
+                <div class="why-card fade-in">
+                    <div class="why-icon">🔑</div>
+                    <h3>End-to-End Service</h3>
+                    <p>From property evaluation and marketing to negotiation and closing — we handle every step so you
+                        can focus on what matters.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== ABOUT ====== -->
+        <section id="about" class="section">
+            <div class="about-grid fade-in">
+                <img src="images/about.jpg" alt="About Us" class="about-img">
+                <div class="about-text">
+                    <h2>About Us</h2>
+                    <p>We are a family-run agency serving the Gujarati community for over 25 years. Our deep local
+                        knowledge and trusted relationships allow us to deliver top results for buyers, sellers, and
+                        renters.</p>
+                    <span class="badge">25+ Years Experience</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== MEET THE TEAM ====== -->
+        <section class="section light-bg team-section">
+            <div class="section-header fade-in">
+                <h2>Meet the Team</h2>
+                <div class="line"></div>
+            </div>
+            <div class="team-grid">
+                <div class="team-card fade-in">
+                    <div class="team-avatar">GP</div>
+                    <h3>Shri Girishbhai Patel</h3>
+                    <span class="team-role">Founder & Managing Director</span>
+                    <p>Over 21 years of real estate expertise. One of the most recognised names in the Bharuch real
+                        estate community and currently serves as <strong>Vice President of the Bharuch Real Estate
+                            Association</strong>.</p>
+                    <div class="team-badges">
+                        <span class="team-badge">21+ Years Experience</span>
+                        <span class="team-badge">VP, Bharuch RE Association</span>
+                    </div>
+                </div>
+                <div class="team-card fade-in">
+                    <div class="team-avatar">JP</div>
+                    <h3>Shri Jaimin Patel</h3>
+                    <span class="team-role">Director of Operations</span>
+                    <p>With over 8 years of hands-on experience, Jaimin brings an energetic, modern approach to property
+                        dealings. His enthusiasm and deep market understanding drive fast, reliable results.</p>
+                    <div class="team-badges">
+                        <span class="team-badge">8+ Years Experience</span>
+                        <span class="team-badge">Next-Gen Leadership</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== AREAS WE SERVE ====== -->
+        <section class="section areas-section">
+            <div class="section-header fade-in">
+                <h2>Areas We Serve</h2>
+                <div class="line"></div>
+                <p class="section-subtitle">Covering 15+ prime localities across the Bharuch district</p>
+            </div>
+            <div class="areas-grid fade-in">
+                <span class="area-pill">📍 Bharuch</span>
+                <span class="area-pill">📍 Zadeshwar</span>
+                <span class="area-pill">📍 Tulsidham</span>
+                <span class="area-pill">📍 Jyotinagar</span>
+                <span class="area-pill">📍 Tavra</span>
+            </div>
+        </section>
+
+        <!-- ====== PROPERTY TYPES ====== -->
+        <section class="section light-bg property-types-section">
+            <div class="section-header fade-in">
+                <h2>Property Types We Deal In</h2>
+                <div class="line"></div>
+            </div>
+            <div class="property-types-grid">
+                <div class="ptype-card fade-in">
+                    <div class="ptype-icon">🏠</div>
+                    <h3>Residential</h3>
+                    <ul>
+                        <li>Flats & Apartments</li>
+                        <li>Houses & Villas</li>
+                        <li>Builder Floors</li>
+                        <li>Residential Plots</li>
+                    </ul>
+                </div>
+                <div class="ptype-card fade-in">
+                    <div class="ptype-icon">🏢</div>
+                    <h3>Commercial</h3>
+                    <ul>
+                        <li>Shops & Showrooms</li>
+                        <li>Office Spaces</li>
+                        <li>Hotels</li>
+                        <li>Commercial Complexes</li>
+                    </ul>
+                </div>
+                <div class="ptype-card fade-in">
+                    <div class="ptype-icon">🏭</div>
+                    <h3>Industrial</h3>
+                    <ul>
+                        <li>Industrial Land</li>
+                        <li>Warehouses</li>
+                        <li>Factories</li>
+                        <li>GIDC Plots</li>
+                    </ul>
+                </div>
+                <div class="ptype-card fade-in">
+                    <div class="ptype-icon">🌾</div>
+                    <h3>Agricultural</h3>
+                    <ul>
+                        <li>Farmland</li>
+                        <li>Agricultural Land</li>
+                        <li>NA Plots</li>
+                        <li>Farm Houses</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== GOOGLE REVIEWS ====== -->
+        <section id="testimonials" class="section light-bg">
+            <div class="section-header fade-in">
+                <h2>What Our Clients Say</h2>
+                <div class="line"></div>
+            </div>
+
+            <!-- Google Rating Badge -->
+            <div class="google-rating-badge fade-in">
+                <div class="google-badge-inner">
+                    <div class="google-logo-row">
+                        <svg viewBox="0 0 24 24" width="28" height="28">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        <span style="font-size: 1.1rem; font-weight: 600; color: #444;">Google Reviews</span>
+                    </div>
+                    <div class="google-score-row">
+                        <span class="google-score">4.4</span>
+                        <div>
+                            <div class="google-stars">★★★★<span style="color:#ddd;">★</span></div>
+                            <span style="font-size: 0.85rem; color: #777;">Based on 100+ reviews</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Grid -->
+            <div class="google-reviews-grid">
+                <div class="google-review-card fade-in">
+                    <div class="review-header">
+                        <div class="review-avatar">GP</div>
+                        <div>
+                            <h4 class="review-name">Gujarat Property Buyer</h4>
+                            <span class="review-time">2 years ago</span>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p>Great experience working with Mr. Girishbhai Patel. He is always responsive and most importantly
+                        delivers more than expected. Highly recommended for anyone looking for property in Bharuch.</p>
+                    <div class="review-source">
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        <span>Posted on Google</span>
+                    </div>
+                </div>
+
+                <div class="google-review-card fade-in">
+                    <div class="review-header">
+                        <div class="review-avatar">RV</div>
+                        <div>
+                            <h4 class="review-name">Rajesh Vaghela</h4>
+                            <span class="review-time">1 year ago</span>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p>Amazing service! The team is hardworking, reliable, friendly and professional which lead to great
+                        results. Found the perfect commercial space for our business in record time.</p>
+                    <div class="review-source">
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        <span>Posted on Google</span>
+                    </div>
+                </div>
+
+                <div class="google-review-card fade-in">
+                    <div class="review-header">
+                        <div class="review-avatar">SP</div>
+                        <div>
+                            <h4 class="review-name">Sneha Patel</h4>
+                            <span class="review-time">3 years ago</span>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★<span style="color:#ddd;">★</span></div>
+                    <p>Professional guidance and quick response during the property search. Shri Girishbhai's vast
+                        knowledge of the Bharuch real estate market truly helped us find our dream home.</p>
+                    <div class="review-source">
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        <span>Posted on Google</span>
+                    </div>
+                </div>
+
+                <div class="google-review-card fade-in">
+                    <div class="review-header">
+                        <div class="review-avatar">AM</div>
+                        <div>
+                            <h4 class="review-name">Amit Modi</h4>
+                            <span class="review-time">6 months ago</span>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p>Excellent team! Helped us sell our property at a very competitive price. Their market knowledge
+                        of Zadeshwar and Bharuch area is unmatched. Very reliable and trustworthy.</p>
+                    <div class="review-source">
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        <span>Posted on Google</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- See All Reviews Button -->
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="https://www.google.com/maps/place/Sukhdham+Estate+Agency/@21.7168881,73.0333011,17z/data=!4m8!3m7!1s0x3be0208f5deaa413:0x78759c19024f7353!8m2!3d21.7168881!4d73.0333011!9m1!1b1!16s"
+                    target="_blank" rel="noopener" class="btn google-review-btn">
+                    <svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align: middle; margin-right: 6px;">
+                        <path fill="#fff"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                        <path fill="#fff"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#fff"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#fff"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    See All Reviews on Google
+                </a>
+            </div>
+        </section>
+
+        <!-- ====== CONTACT ====== -->
+        <section id="contact" class="section contact-section">
+            <div class="container">
+                <div class="section-header fade-in">
+                    <h2>Contact Us</h2>
+                    <div class="line"></div>
+                </div>
+                <div class="contact-grid">
+                    <!-- left column: info -->
+                    <div class="contact-info fade-in">
+                        <ul class="contact-list">
+                            <li><span class="icon contact-icon">📍</span><span>Shop No 6, Jashu Patel Park Shopping
+                                    Centre, Zadeshwar, Bharuch, Gujarat 392011</span></li>
+                            <li><span class="icon contact-icon">📞</span><span>+91 93767 39237 / +91 93762 39237</span>
+                            </li>
+                            <li><span class="icon contact-icon">✉️</span><span>bharuch@sukhdham.in</span></li>
+                        </ul>
+
+                        <!-- Operating Hours -->
+                        <div class="hours-card">
+                            <h4>🕐 Operating Hours</h4>
+                            <div class="hours-row"><span>Monday – Saturday</span><strong>9:00 AM – 8:00 PM</strong>
+                            </div>
+                            <div class="hours-row"><span>Sunday</span><strong>9:00 AM – 9:00 PM</strong></div>
+                        </div>
+
+                        <a class="btn whatsapp-btn" href="https://wa.me/919376739237">WhatsApp Us</a>
+                    </div>
+                    <!-- right column: map (moved) -->
+                    <div class="contact-map-section fade-in">
+                        <div class="map-container">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3722.627894321055!2d73.0333011!3d21.7168881!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be0208f5deaa413%3A0x78759c19024f7353!2sSukhdham%20Estate%20Agency%2C%20Shop%20no%206%2C%20Jashu%20Patel%20park%20Shopping%20Nr%2C%20Water%20tank%2C%20Ramvatika%20Society%2C%20Zadeshwar%2C%20Bharuch%2C%20Gujarat%20392011!5e0!3m2!1sen!2sin!4v1640000000000"
+                                width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                        <a href="https://www.google.com/maps/search/Sukhdham+Estate+Agency%2C+Shop+no+6%2C+Jashu+Patel+park+Shopping+Nr%2C+Water+tank%2C+Ramvatika+Society%2C+Zadeshwar%2C+Bharuch%2C+Gujarat+392011"
+                            target="_blank" rel="noopener" class="btn map-link-btn">Open in Google Maps</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- ====== FOOTER ====== -->
+    <footer class="footer footer-dark">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col about-col">
+                    <div class="logo"><img src="images/logo.svg" alt="Sukhdham Estate Agency" class="logo-img">Sukhdham
+                        Estate Agency
+                    </div>
+                    <p class="footer-desc">Trusted real estate service in Gujarat since 1996. We offer buying, selling,
+                        rentals and expert consulting.</p>
+                </div>
+                <div class="footer-col links-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="properties.php">Properties</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="company_profile.html" target="_blank">📄 Company Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col services-col">
+                    <h4>Our Services</h4>
+                    <ul>
+                        <li><a href="#services">Buy Property</a></li>
+                        <li><a href="#services">Sell Property</a></li>
+                        <li><a href="#services">Rental Services</a></li>
+                        <li><a href="#services">Consultation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col contact-col">
+                    <h4>Contact</h4>
+                    <p>📍 Zadeshwar, Bharuch, Gujarat</p>
+                    <p>📞 +91 9376739237</p>
+                    <p>✉️ bharuch@sukhdham.in</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2026 Sukhdham Estate Agency</p>
+                <p class="copyright"> Made with ❤ by <a href="https://infinitycomputer.in/" target="_blank"
+                        rel="noopener">Infinity Computer</a>(02642)229070
+
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sukhdham Estate Agency - Company Profile</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            background-color: #2c2c2c;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+
+        .document-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+            gap: 40px;
+        }
+
+        .page {
+            width: 210mm;
+            height: 297mm;
+            background-color: white;
+            position: relative;
+            box-sizing: border-box;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+            }
+
+            .document-wrapper {
+                padding: 0;
+                gap: 0;
+                display: block;
+            }
+
+            .page {
+                box-shadow: none;
+                margin: 0;
+                overflow: hidden;
+                page-break-after: always;
+            }
+
+            img {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                max-width: 100% !important;
+                break-inside: avoid;
+            }
+
+            .photo-card {
+                break-inside: avoid;
+            }
+
+            .photo-card img {
+                height: 120px !important;
+                object-fit: cover !important;
+            }
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Playfair Display', serif;
+            margin: 0;
+            color: #1a2942;
+        }
+
+        p {
+            line-height: 1.55;
+            font-size: 12px;
+            margin: 0 0 10px 0;
+            color: #444;
+        }
+
+        /* ─────────────────────────────────────────
+           DECORATIVE ELEMENTS
+           ───────────────────────────────────────── */
+        .accent-bar {
+            height: 5px;
+            width: 60px;
+            background: linear-gradient(90deg, #cfa861, #e8c97a);
+            margin-bottom: 15px;
+            border-radius: 3px;
+        }
+
+        .accent-bar-long {
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(90deg, #1a2942 30%, #cfa861 30%, #cfa861 60%, #e0e0e0 60%);
+            margin-bottom: 15px;
+        }
+
+        /* Floating circles decoration */
+        .circle-deco {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.06;
+            background: #cfa861;
+        }
+
+        /* ═══════════════════════════════════════════
+           PAGE 1 – COVER
+           ═══════════════════════════════════════════ */
+        .cover {
+            background: linear-gradient(160deg, #f8f9fa 0%, #eef1f5 42%, #1a2942 42%);
+        }
+
+        /* Top-left decorative triangle */
+        .cover-triangle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 120px solid #cfa861;
+            border-bottom: 120px solid transparent;
+            z-index: 2;
+        }
+
+        .cover-header {
+            position: relative;
+            z-index: 10;
+            padding: 45px 55px 20px;
+        }
+
+        .cover-header h1 {
+            font-size: 46px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #1a2942;
+            font-weight: 900;
+        }
+
+        .cover-header .sub {
+            font-size: 16px;
+            font-weight: 500;
+            color: #888;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .cover-contact-strip {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .cover-contact-strip li {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Bottom Dark Area */
+        .cover-dark-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 58%;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 50px;
+            box-sizing: border-box;
+        }
+
+        /* Gold diagonal accent */
+        .cover-gold-stripe {
+            position: absolute;
+            top: -110px;
+            left: -42px;
+            width: 120%;
+            height: 70px;
+            background: linear-gradient(90deg, #cfa861, #e8c97a);
+            transform: rotate(-20deg);
+            z-index: 6;
+        }
+
+        .cover-tagline {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #cfa861;
+            font-style: italic;
+            margin-bottom: 15px;
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .cover-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: 5px;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+            position: relative;
+            text-align: center;
+        }
+
+        .cover-service-bar {
+            font-size: 10px;
+            color: #cfa861;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 10;
+            position: relative;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* Small bottom-right triangle mirror */
+        .cover-triangle-br {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-right: 80px solid #cfa861;
+            border-top: 80px solid transparent;
+            z-index: 15;
+            opacity: 0.5;
+        }
+
+
+        /* ═══════════════════════════════════════════
+           INNER PAGES – Two Column Layout
+           ═══════════════════════════════════════════ */
+        .two-col {
+            display: flex;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+        }
+
+        .col-left {
+            width: 58%;
+            padding: 40px 30px 40px 45px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .col-right {
+            width: 42%;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Right column background */
+        .col-right-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Gold edge accent */
+        .col-gold-edge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, #cfa861, #e8c97a);
+            z-index: 10;
+        }
+
+        .col-right-inner {
+            position: relative;
+            z-index: 5;
+            padding: 40px 30px;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .col-right-title {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 28px;
+            text-align: right;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        /* Photo Cards – glassmorphism style */
+        .photo-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 12px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .photo-card p {
+            margin: 6px 0 4px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #1a2942;
+            letter-spacing: 0.5px;
+        }
+
+        /* Page section header */
+        .section-title {
+            font-size: 22px;
+            color: #cfa861;
+            margin-bottom: 8px;
+        }
+
+        /* Service list */
+        .svc-list {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0;
+        }
+
+        .svc-list li {
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding-left: 18px;
+            position: relative;
+            color: #1a2942;
+            font-weight: 500;
+        }
+
+        .svc-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #cfa861;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Service description cards */
+        .svc-card {
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 6px;
+            padding: 12px 14px;
+            border-left: 4px solid #cfa861;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .svc-card h4 {
+            color: #1a2942;
+            margin-bottom: 4px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .svc-card p {
+            font-size: 11px;
+            margin: 0;
+            color: #555;
+        }
+
+        /* Testimonial cards */
+        .testi-card {
+            background: linear-gradient(135deg, #fafafa, #fff);
+            border-radius: 6px;
+            padding: 12px 14px 12px 38px;
+            margin-bottom: 8px;
+            position: relative;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .testi-card::before {
+            content: '❝';
+            font-size: 22px;
+            color: #cfa861;
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            line-height: 1;
+        }
+
+        .testi-card p {
+            font-style: italic;
+            margin: 0;
+            font-size: 11px;
+            color: #555;
+        }
+
+        /* ═══════════════════════════════════════════
+           PAGE 5 – BACK COVER / CONTACT
+           ═══════════════════════════════════════════ */
+        .backcover-top {
+            height: 30%;
+            padding: 40px 50px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .backcover-bottom {
+            height: 70%;
+            background: linear-gradient(160deg, #1a2942 0%, #0c1524 100%);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* Diagonal gold accent */
+        .backcover-accent {
+            position: absolute;
+            top: -30px;
+            left: -20px;
+            width: 115%;
+            height: 60px;
+            background: linear-gradient(90deg, #cfa861, #e8c97a);
+            transform: rotate(-3deg);
+            z-index: 1;
+        }
+
+        .backcover-content {
+            position: relative;
+            z-index: 5;
+            color: white;
+            padding: 80px 50px 40px;
+        }
+
+        .backcover-names {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #cfa861;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .backcover-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            letter-spacing: 4px;
+            margin-bottom: 25px;
+        }
+
+        .backcover-content p {
+            font-size: 13px;
+            color: #bbb;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        .backcover-contact-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .backcover-contact-list li {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .backcover-footer {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 9px;
+            color: #555;
+            z-index: 5;
+        }
+
+        /* Bottom-right triangle */
+        .backcover-triangle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-right: 100px solid rgba(207, 168, 97, 0.3);
+            border-top: 100px solid transparent;
+            z-index: 2;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="document-wrapper">
+
+        <!-- ═══════════ PAGE 1: COVER ═══════════ -->
+        <div class="page cover">
+            <div class="cover-triangle"></div>
+            <div class="cover-triangle-br"></div>
+
+            <!-- Decorative circles -->
+            <div class="circle-deco" style="width:300px;height:300px;top:-80px;right:-80px;"></div>
+            <div class="circle-deco" style="width:160px;height:160px;bottom:200px;left:30px;background:#1a2942;"></div>
+
+            <div class="cover-header">
+                <h1>Sukhdham</h1>
+                <div class="sub">Estate Agency</div>
+                <div class="accent-bar-long" style="width:55%"></div>
+                <ul class="cover-contact-strip">
+                    <li><span style="font-size:14px">📱</span> +91 – 93767 39237</li>
+                    <li><span style="font-size:14px">📱</span> +91 – 93762 39237</li>
+                    <li><span style="font-size:14px">✉️</span> bharuch@sukhdham.in</li>
+                    <li><span style="font-size:14px">🌐</span> sukhdham.in</li>
+                </ul>
+            </div>
+
+            <div class="cover-dark-area">
+                <div class="cover-gold-stripe"></div>
+                <div class="cover-tagline">Your Dream Property is Our Destination...</div>
+                <div class="cover-logo">SUKHDHAM ESTATE AGENCY</div>
+                <div class="cover-service-bar">
+                    || Buy Property || Sell Property || Rental Services || Consultation ||
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════ PAGE 2: ABOUT US ═══════════ -->
+        <div class="page">
+            <!-- Decorative circles -->
+            <div class="circle-deco" style="width:200px;height:200px;bottom:-60px;left:-60px;"></div>
+
+            <div class="two-col">
+                <div class="col-left">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <div style="font-size:14px; font-weight:600; color:#1a2942;">Where Trust Comes First...</div>
+                        <div
+                            style="font-family:'Playfair Display',serif; font-size:20px; font-weight:900; color:#1a2942;">
+                            SUKHDHAM ESTATE AGENCY</div>
+                    </div>
+                    <div class="accent-bar-long"></div>
+
+                    <p><strong>Sukhdham Estate Agency</strong> is a trusted family-run real estate firm established in
+                        1996 with more than 25 years of experience in the property market. The company is dedicated to
+                        helping clients find their dream properties through expert guidance, deep local market
+                        knowledge, and long-standing relationships with customers.</p>
+
+                    <p>Client satisfaction and timely execution of property deals are our motto. We are the specialists
+                        in managing various property types such as residential homes, luxury apartments, commercial
+                        offices, and expansive residential plots.</p>
+
+                    <p>Setting unmatched standards, our real estate services have been widely acclaimed in and around
+                        Gujarat. With a strong presence in Bharuch and nearby areas, Sukhdham Estate Agency has built a
+                        reputation for reliability, transparency, and professional service in every real estate
+                        transaction.</p>
+
+                    <p><strong>Shri Girishbhai Patel</strong>, the President of the Bharuch Real Estate Association, has
+                        more than 21 years of real estate business experience. He is highly respected and popular within
+                        the real estate group, ensuring trusted and secure transactions.</p>
+
+                    <p><strong>Shri Jaimin Patel</strong>, our Real Estate Specialist, brings more than 8 years of
+                        enthusiastic experience to the agency, providing dynamic, modern solutions to clients navigating
+                        the property market.</p>
+
+                    <p
+                        style="font-style:italic; color:#cfa861; font-weight:500; font-size:13px; margin-top:12px; border-left:3px solid #cfa861; padding-left:12px;">
+                        "There's much to see here. So, take your time, look around, and learn all there is to know about
+                        us. We hope you enjoy our site and take a moment to drop us a line."
+                    </p>
+                </div>
+
+                <div class="col-right" style="background-color: #1a2942;">
+                    <div class="col-gold-edge"></div>
+
+                    <div class="col-right-inner">
+                        <div class="col-right-title">About Us</div>
+
+                        <div class="photo-card">
+                            <img src="images/i7.png" alt="Property">
+                            <p>Beautiful Residential Properties</p>
+                        </div>
+                        <div class="photo-card">
+                            <img src="images/i9.jpg" alt="Office">
+                            <p>Our Workspace &amp; Consultation Area</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════ PAGE 3: OUR SERVICES ═══════════ -->
+        <div class="page">
+            <div class="circle-deco" style="width:250px;height:250px;top:-80px;right:300px;"></div>
+
+            <div class="two-col">
+                <div class="col-left">
+                    <h2 class="section-title">Our Services</h2>
+                    <div class="accent-bar"></div>
+
+                    <ul class="svc-list">
+                        <li>Buy Property (Residential &amp; Commercial)</li>
+                        <li>Sell Property at Top Market Value</li>
+                        <li>Rental Services &amp; Leasing</li>
+                        <li>Real Estate Legal Consultation</li>
+                        <li>TICs &amp; Fixer-Uppers</li>
+                        <li>Luxury Real Estate Management</li>
+                        <li>Financial Affordability Advice</li>
+                    </ul>
+
+                    <div class="svc-card" style="margin-top:8px;">
+                        <h4>🏠 Real Estate Done Right</h4>
+                        <p>Nervous about your property adventure? Don't be. Whether you're getting ready to buy or sell,
+                            in the middle of it, or just looking for some answers, our top-notch skills ensure you get
+                            the best experience possible.</p>
+                    </div>
+                    <div class="svc-card">
+                        <h4>🏢 Commercial, Residential, and Rentals</h4>
+                        <p>Large or small, condo or mansion, we can find it and get it for you at the price that's
+                            right. TICs? Fixer-uppers? Luxury? We can help with all of it.</p>
+                    </div>
+                    <div class="svc-card">
+                        <h4>💼 Rely on Expertise</h4>
+                        <p>If you have questions about affordability, credit, legal matters, or income, trust us to find
+                            you what you need fast. We make sure you feel confident every step of the way.</p>
+                    </div>
+                </div>
+
+                <div class="col-right" style="background-color: #cfa861;">
+                    <div class="col-gold-edge" style="background:#1a2942;"></div>
+
+                    <div class="col-right-inner">
+                        <div class="col-right-title" style="color:#1a2942;">Services</div>
+
+                        <div class="photo-card">
+                            <img src="images/i4.png" alt="Luxury Home">
+                            <p>Luxury Homes &amp; Apartments</p>
+                        </div>
+                        <div class="photo-card">
+                            <img src="images/i8.png" alt="Commercial Office">
+                            <p>Commercial Office Spaces</p>
+                        </div>
+                        <div class="photo-card">
+                            <img src="images/i5.png" alt="Land">
+                            <p>Residential &amp; Commercial Plots</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════ PAGE 4: REGIONS & FEEDBACK ═══════════ -->
+        <div class="page">
+            <div class="circle-deco" style="width:180px;height:180px;bottom:-50px;left:-50px;background:#1a2942;"></div>
+
+            <div class="two-col">
+                <div class="col-left">
+                    <h2 class="section-title">Where We Work</h2>
+                    <div class="accent-bar"></div>
+
+                    <ul class="svc-list">
+                        <li><strong>Gujarat (Primary Region)</strong></li>
+                        <li>Zadeshwar (Bharuch)</li>
+                        <li>Ahmedabad</li>
+                        <li>S.G Highway</li>
+                    </ul>
+
+                    <h2 class="section-title" style="margin-top:22px;">Client Feedback</h2>
+                    <div class="accent-bar"></div>
+
+                    <div class="testi-card">
+                        <p>Excellent service and support in helping us find our dream home. The team was patient and
+                            understood our needs perfectly.</p>
+                    </div>
+                    <div class="testi-card">
+                        <p>Professional guidance and quick response during the property search. Highly recommend Shri
+                            Girishbhai for his vast knowledge.</p>
+                    </div>
+                    <div class="testi-card">
+                        <p>They helped us sell our property at a very competitive price in a tough market. Very
+                            reliable.</p>
+                    </div>
+                    <div class="testi-card">
+                        <p>The rental service is seamless. Found an amazing office space for my startup in record time.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-right" style="background-color: #333;">
+                    <div class="col-gold-edge"></div>
+
+                    <div class="col-right-inner">
+                        <div class="col-right-title">Regions</div>
+
+                        <div class="photo-card">
+                            <img src="images/i3.png" alt="Map">
+                            <p>Serving Bharuch, Ahmedabad &amp; Gujarat</p>
+                        </div>
+                        <div class="photo-card">
+                            <img src="images/i2.png" alt="Community">
+                            <p>Building Trust in Local Communities</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════ PAGE 5: BACK COVER / CONTACT ═══════════ -->
+        <div class="page" style="background:#f8f9fa;">
+            <div class="backcover-top">
+                <div class="accent-bar-long" style="width:45%"></div>
+                <h2 style="font-size:30px; color:#1a2942; margin-bottom:12px;">Get in Touch</h2>
+                <p style="font-size:15px; max-width:380px; font-weight:500; color:#555;">
+                    We're always ready to help you navigate your real estate journey.
+                </p>
+            </div>
+
+            <div class="backcover-bottom">
+                <div class="backcover-accent"></div>
+                <div class="backcover-triangle"></div>
+
+                <div class="backcover-content">
+                    <div class="backcover-names">Girishbhai Patel / Jaimin Patel</div>
+                    <div class="backcover-logo">SUKHDHAM ESTATE AGENCY</div>
+
+                    <p style="font-weight:500; line-height:1.7;">
+                        6 Jashu Patel Park Shopping centre,<br>
+                        Near Water Tank, Ramvatika Society,<br>
+                        Zadeshwar, Bharuch, Gujarat 392011.
+                    </p>
+
+                    <ul class="backcover-contact-list">
+                        <li><span style="color:#cfa861;font-size:16px;">📱</span> +91 – 93767 39237</li>
+                        <li><span style="color:#cfa861;font-size:16px;">📱</span> +91 – 93762 39237</li>
+                        <li><span style="color:#cfa861;font-size:16px;">✉️</span> bharuch@sukhdham.in</li>
+                        <li><span style="color:#cfa861;font-size:16px;">🌐</span> sukhdham.in</li>
+                    </ul>
+                </div>
+
+                <div class="backcover-footer">
+                    Copyright © 2021 Sukhdham Estate Agency – All Rights Reserved. Made with ❤ by Infinity Computer
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
