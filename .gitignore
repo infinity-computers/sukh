@@ -15,5 +15,5 @@ public/uploads/
 *.log
 
 # Composer
-vendor/
+# vendor/
 composer.lock
