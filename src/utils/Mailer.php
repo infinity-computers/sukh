@@ -1,5 +1,13 @@
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Require PHPMailer files directly
+require_once __DIR__ . '/../vendor/PHPMailer/src/Exception.php';
+require_once __DIR__ . '/../vendor/PHPMailer/src/PHPMailer.php';
+require_once __DIR__ . '/../vendor/PHPMailer/src/SMTP.php';
+
 class Mailer {
     
     public static function sendOTP($email, $otp) {
@@ -41,25 +49,45 @@ class Mailer {
         </html>
         ";
         
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-type: text/html; charset=UTF-8\r\n";
-        $headers .= "From: " . MAIL_FROM_NAME . " <" . NOREPLY_EMAIL . ">\r\n";
-        $headers .= "Reply-To: " . NOREPLY_EMAIL . "\r\n";
+        $mail = new PHPMailer(true);
         
-        // Attempt to send email via PHP mail(). If it fails (common on local XAMPP), log OTP to a file for debugging.
-        $sent = mail($email, $subject, $message, $headers);
-        if (!$sent) {
-            // Ensure logs directory exists
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host       = SMTP_HOST;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = SMTP_USERNAME;
+            $mail->Password   = SMTP_PASSWORD;
+            $mail->SMTPSecure = SMTP_SECURE;
+            $mail->Port       = SMTP_PORT;
+
+            // Recipients
+            $mail->setFrom(SMTP_USERNAME, MAIL_FROM_NAME);
+            $mail->addAddress($email);
+            $mail->addReplyTo(SMTP_USERNAME, MAIL_FROM_NAME);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $message;
+            $mail->AltBody = "Your OTP is: $otp. It will expire in " . OTP_EXPIRY_MINUTES . " minutes.";
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            // Log the error and the OTP as fallback
             $logDir = __DIR__ . '/../../logs';
             if (!is_dir($logDir)) {
                 mkdir($logDir, 0755, true);
             }
             $logFile = $logDir . '/otp_' . preg_replace('/[^a-zA-Z0-9]/', '_', $email) . '.txt';
-            $logContent = "OTP for $email: $otp\nGenerated at: " . date('Y-m-d H:i:s') . "\nExpires in " . OTP_EXPIRY_MINUTES . " minutes\n";
+            $logContent = "OTP for $email: $otp\nError sending email: {$mail->ErrorInfo}\nGenerated at: " . date('Y-m-d H:i:s') . "\nExpires in " . OTP_EXPIRY_MINUTES . " minutes\n";
             file_put_contents($logFile, $logContent);
+            
+            return true; // Return true anyway so local development continues working without SMTP
         }
-        return true;
     }
 }
+
 
 ?>
