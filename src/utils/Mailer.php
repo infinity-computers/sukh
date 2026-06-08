@@ -41,10 +41,9 @@ class Mailer {
         </html>
         ";
         
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-type: text/html; charset=UTF-8\r\n";
+        $headers  = "MIME-Version: 1.0\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
         $headers .= "From: " . MAIL_FROM_NAME . " <" . NOREPLY_EMAIL . ">\r\n";
-        $headers .= "Reply-To: " . NOREPLY_EMAIL . "\r\n";
         
         // Attempt to send email via standard PHP mail() (like in your reference code)
         $sent = @mail($email, $subject, $message, $headers);
