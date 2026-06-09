@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS properties (
   bedrooms INT,
   bathrooms INT,
   area_sqft INT,
+  property_type ENUM('sell', 'rent') NOT NULL DEFAULT 'sell',
+  category VARCHAR(50) NOT NULL DEFAULT 'Apartment',
+  property_status ENUM('available', 'sold', 'rented') NOT NULL DEFAULT 'available',
+  booking_enabled TINYINT(1) NOT NULL DEFAULT 1,
   status ENUM('active', 'inactive') DEFAULT 'active',
   is_featured BOOLEAN DEFAULT FALSE,
   primary_image_id INT,
@@ -24,6 +28,10 @@ CREATE TABLE IF NOT EXISTS properties (
   FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE,
   INDEX idx_admin (admin_id),
   INDEX idx_status (status),
+  INDEX idx_property_type (property_type),
+  INDEX idx_category (category),
+  INDEX idx_property_status (property_status),
+  INDEX idx_booking_enabled (booking_enabled),
   INDEX idx_featured (is_featured)
 );
 
@@ -36,6 +44,23 @@ CREATE TABLE IF NOT EXISTS property_images (
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
   INDEX idx_property (property_id)
+);
+
+-- Create property_bookings table
+CREATE TABLE IF NOT EXISTS property_bookings (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  property_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  phone VARCHAR(30) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  visit_date DATE NOT NULL,
+  visit_time TIME NOT NULL,
+  message TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
+  INDEX idx_booking_property (property_id),
+  INDEX idx_booking_date (visit_date),
+  INDEX idx_booking_created_at (created_at)
 );
 
 -- Create otp_verification table

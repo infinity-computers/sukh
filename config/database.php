@@ -67,8 +67,84 @@ try {
     }
     
     $conn->set_charset("utf8mb4");
+
+    ensureSchema($conn);
 } catch (Exception $e) {
     die("Database connection error: " . $e->getMessage());
+}
+
+function columnExists($conn, $table, $column)
+{
+    $stmt = $conn->prepare("SELECT COUNT(*) AS count FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?");
+    $stmt->bind_param('ss', $table, $column);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result ? $result->fetch_assoc() : ['count' => 0];
+    $stmt->close();
+
+    return !empty($row['count']);
+}
+
+function tableExists($conn, $table)
+{
+    $stmt = $conn->prepare("SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?");
+    $stmt->bind_param('s', $table);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result ? $result->fetch_assoc() : ['count' => 0];
+    $stmt->close();
+
+    return !empty($row['count']);
+}
+
+function ensureSchema($conn)
+{
+    if (tableExists($conn, 'properties')) {
+        $conn->query("CREATE TABLE IF NOT EXISTS property_bookings (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            property_id INT NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            phone VARCHAR(30) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            visit_date DATE NOT NULL,
+            visit_time TIME NOT NULL,
+            message TEXT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
+            INDEX idx_property_id (property_id),
+            INDEX idx_visit_date (visit_date),
+            INDEX idx_created_at (created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    }
+
+    if (!columnExists($conn, 'properties', 'property_type')) {
+        $conn->query("ALTER TABLE properties ADD COLUMN property_type ENUM('sell', 'rent') NOT NULL DEFAULT 'sell' AFTER admin_id");
+    }
+
+    if (!columnExists($conn, 'properties', 'category')) {
+        $conn->query("ALTER TABLE properties ADD COLUMN category VARCHAR(50) NOT NULL DEFAULT 'Apartment' AFTER property_type");
+    }
+
+    if (!columnExists($conn, 'properties', 'property_status')) {
+        $conn->query("ALTER TABLE properties ADD COLUMN property_status ENUM('available', 'sold', 'rented') NOT NULL DEFAULT 'available' AFTER category");
+    }
+
+    if (!columnExists($conn, 'properties', 'booking_enabled')) {
+        $conn->query("ALTER TABLE properties ADD COLUMN booking_enabled TINYINT(1) NOT NULL DEFAULT 1 AFTER property_status");
+    }
+}
+
+function generatePropertyTitle($propertyType, $category, $bedrooms = 0)
+{
+    $typeLabel = strtoupper(substr((string) $propertyType, 0, 1)) . strtolower(substr((string) $propertyType, 1));
+    $categoryLabel = trim((string) $category);
+    $parts = [$categoryLabel, $typeLabel];
+
+    if (!empty($bedrooms)) {
+        $parts[] = $bedrooms . ' BHK';
+    }
+
+    return implode(' ', $parts);
 }
 
 ?>

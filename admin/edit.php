@@ -254,10 +254,12 @@ if ($primary_image_id === 0 && !empty($images)) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $address = trim($_POST['address'] ?? '');
+    $property_type = in_array(($_POST['property_type'] ?? 'sell'), ['sell', 'rent'], true) ? $_POST['property_type'] : 'sell';
+    $category = trim($_POST['category'] ?? 'Apartment');
+    $property_status = in_array(($_POST['property_status'] ?? 'available'), ['available', 'sold', 'rented'], true) ? $_POST['property_status'] : 'available';
+    $booking_enabled = !empty($_POST['booking_enabled']) ? 1 : 0;
 
     $price = !empty($_POST['price'])
         ? floatval($_POST['price'])
@@ -266,12 +268,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bedrooms = intval($_POST['bedrooms'] ?? 0);
     $bathrooms = intval($_POST['bathrooms'] ?? 0);
     $area_sqft = intval($_POST['area_sqft'] ?? 0);
+    $title = generatePropertyTitle($property_type, $category, $bedrooms);
 
-    if (empty($title)) {
-
-        $error = 'Title is required';
-
-    } elseif (empty($address)) {
+    if (empty($address)) {
 
         $error = 'Address is required';
 
@@ -286,13 +285,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 price = ?,
                 bedrooms = ?,
                 bathrooms = ?,
-                area_sqft = ?
+                area_sqft = ?,
+                property_type = ?,
+                category = ?,
+                property_status = ?,
+                booking_enabled = ?
             WHERE id = ?
         ");
 
         // FIXED TYPES
         $stmt->bind_param(
-            'sssdiiii',
+            'sssdiiisssii',
             $title,
             $description,
             $address,
@@ -300,6 +303,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bedrooms,
             $bathrooms,
             $area_sqft,
+            $property_type,
+            $category,
+            $property_status,
+            $booking_enabled,
             $property_id
         );
 
@@ -541,17 +548,70 @@ function saveBase64Image($base64_data, $property_id)
           enctype="multipart/form-data"
           class="bg-white rounded-lg shadow p-6">
 
-        <div class="mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
 
-            <label class="block text-gray-700 font-medium mb-2">
-                Title *
-            </label>
+            <div>
 
-            <input type="text"
-                   name="title"
-                   required
-                   value="<?php echo htmlspecialchars($property['title']); ?>"
-                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label class="block text-gray-700 font-medium mb-2">
+                    Property Type *
+                </label>
+
+                <select name="property_type"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    <option value="sell" <?php echo (($property['property_type'] ?? 'sell') === 'sell') ? 'selected' : ''; ?>>Sell</option>
+                    <option value="rent" <?php echo (($property['property_type'] ?? 'sell') === 'rent') ? 'selected' : ''; ?>>Rent</option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label class="block text-gray-700 font-medium mb-2">
+                    Property Category *
+                </label>
+
+                <select name="category"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    <?php foreach (['Apartment', 'House', 'Villa', 'Commercial', 'Plot', 'Other'] as $item): ?>
+                        <option value="<?php echo htmlspecialchars($item); ?>" <?php echo (($property['category'] ?? 'Apartment') === $item) ? 'selected' : ''; ?>><?php echo htmlspecialchars($item); ?></option>
+                    <?php endforeach; ?>
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+            <div>
+
+                <label class="block text-gray-700 font-medium mb-2">
+                    Property Status *
+                </label>
+
+                <select name="property_status"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    <option value="available" <?php echo (($property['property_status'] ?? 'available') === 'available') ? 'selected' : ''; ?>>Available</option>
+                    <option value="sold" <?php echo (($property['property_status'] ?? 'available') === 'sold') ? 'selected' : ''; ?>>Sold</option>
+                    <option value="rented" <?php echo (($property['property_status'] ?? 'available') === 'rented') ? 'selected' : ''; ?>>Rented</option>
+
+                </select>
+
+            </div>
+
+            <div class="flex items-center gap-3 mt-7">
+                <input type="checkbox"
+                       name="booking_enabled"
+                       id="booking_enabled"
+                       <?php echo !empty($property['booking_enabled']) ? 'checked' : ''; ?>
+                       class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                <label for="booking_enabled" class="text-gray-700 font-medium">Booking Available</label>
+            </div>
 
         </div>
 
@@ -562,7 +622,7 @@ function saveBase64Image($base64_data, $property_id)
             </label>
 
             <textarea name="description"
-                      rows="4"
+                      rows="6"
                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"><?php echo htmlspecialchars($property['description'] ?? ''); ?></textarea>
 
         </div>

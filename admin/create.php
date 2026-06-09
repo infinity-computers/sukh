@@ -24,10 +24,12 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $address = trim($_POST['address'] ?? '');
+    $property_type = in_array(($_POST['property_type'] ?? 'sell'), ['sell', 'rent'], true) ? $_POST['property_type'] : 'sell';
+    $category = trim($_POST['category'] ?? 'Apartment');
+    $property_status = in_array(($_POST['property_status'] ?? 'available'), ['available', 'sold', 'rented'], true) ? $_POST['property_status'] : 'available';
+    $booking_enabled = !empty($_POST['booking_enabled']) ? 1 : 0;
 
     $price = !empty($_POST['price'])
         ? floatval($_POST['price'])
@@ -36,10 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bedrooms = intval($_POST['bedrooms'] ?? 0);
     $bathrooms = intval($_POST['bathrooms'] ?? 0);
     $area_sqft = intval($_POST['area_sqft'] ?? 0);
+    $title = generatePropertyTitle($property_type, $category, $bedrooms);
 
-    if (empty($title)) {
-        $error = 'Title is required';
-    } elseif (empty($address)) {
+    if (empty($address)) {
         $error = 'Address is required';
     } else {
 
@@ -56,9 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 bedrooms,
                 bathrooms,
                 area_sqft,
+                property_type,
+                category,
+                property_status,
+                booking_enabled,
                 status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
         ");
 
         if (!$stmt) {
@@ -67,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // FIXED TYPES
         $stmt->bind_param(
-            'isssdiii',
+            'isssdiiisssi',
             $admin_id,
             $title,
             $description,
@@ -75,7 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $price,
             $bedrooms,
             $bathrooms,
-            $area_sqft
+            $area_sqft,
+            $property_type,
+            $category,
+            $property_status,
+            $booking_enabled
         );
 
         if ($stmt->execute()) {
@@ -205,16 +214,45 @@ function saveBase64Image($base64_data, $property_id)
         <?php endif; ?>
         
         <form method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6">
-            <div class="mb-6">
-                <label class="block text-gray-700 font-medium mb-2">Title *</label>
-                <input type="text" name="title" required 
-                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                       placeholder="Property title">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Property Type *</label>
+                    <select name="property_type" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="sell" selected>Sell</option>
+                        <option value="rent">Rent</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Property Category *</label>
+                    <select name="category" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="Apartment" selected>Apartment</option>
+                        <option value="House">House</option>
+                        <option value="Villa">Villa</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Plot">Plot</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
             </div>
-            
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Property Status *</label>
+                    <select name="property_status" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="available">Available</option>
+                        <option value="sold">Sold</option>
+                        <option value="rented">Rented</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-3 mt-7">
+                    <input type="checkbox" name="booking_enabled" id="booking_enabled" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    <label for="booking_enabled" class="text-gray-700 font-medium">Booking Available</label>
+                </div>
+            </div>
+
             <div class="mb-6">
                 <label class="block text-gray-700 font-medium mb-2">Description</label>
-                <textarea name="description" rows="4" 
+                <textarea name="description" rows="6" 
                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="Property description"></textarea>
             </div>

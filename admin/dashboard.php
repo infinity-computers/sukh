@@ -100,6 +100,11 @@ $stmt->execute();
 $total_properties = $stmt->get_result()->fetch_assoc()['count'];
 $total_pages = ceil($total_properties / $limit);
 
+$stmt = $conn->prepare("SELECT COUNT(*) as count FROM property_bookings pb INNER JOIN properties p ON p.id = pb.property_id WHERE p.admin_id = ?");
+$stmt->bind_param('i', $admin_id);
+$stmt->execute();
+$total_bookings = $stmt->get_result()->fetch_assoc()['count'] ?? 0;
+
 $stmt = $conn->prepare("SELECT * FROM properties WHERE admin_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?");
 $stmt->bind_param('iii', $admin_id, $limit, $offset);
 $stmt->execute();
@@ -136,6 +141,10 @@ $remaining_time = SESSION_TIMEOUT_MINUTES * 60;
                class="inline-flex justify-center bg-blue-600 text-white px-5 sm:px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 w-full sm:w-auto">
                 + Add Property
             </a>
+            <a href="bookings.php" 
+               class="inline-flex justify-center bg-gray-800 text-white px-5 sm:px-6 py-2 rounded-lg font-semibold hover:bg-gray-900 w-full sm:w-auto">
+                View Bookings
+            </a>
         </div>
         
         <!-- Stats -->
@@ -169,6 +178,15 @@ $remaining_time = SESSION_TIMEOUT_MINUTES * 60;
                     <div class="text-3xl sm:text-4xl text-red-600">⏱️</div>
                 </div>
             </div>
+            <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Bookings</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-gray-800 break-words"><?php echo (int) $total_bookings; ?></p>
+                    </div>
+                    <div class="text-3xl sm:text-4xl text-emerald-600">📅</div>
+                </div>
+            </div>
         </div>
         
         <!-- Properties List -->
@@ -178,8 +196,9 @@ $remaining_time = SESSION_TIMEOUT_MINUTES * 60;
                     <table class="w-full min-w-[760px]">
                         <thead class="bg-gray-50 border-b">
                             <tr>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Address</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Availability</th>
                                 <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Price</th>
                                 <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Images</th>
                                 <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Featured</th>
@@ -190,10 +209,13 @@ $remaining_time = SESSION_TIMEOUT_MINUTES * 60;
                             <?php foreach ($properties as $property): ?>
                                 <tr class="border-b hover:bg-gray-50">
                                     <td class="px-6 py-4 text-sm text-gray-900">
-                                        <?php echo htmlspecialchars($property['title']); ?>
+                                        <?php echo htmlspecialchars(ucfirst($property['property_type'] ?? 'sell')); ?>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-600">
-                                        <?php echo htmlspecialchars($property['address']); ?>
+                                        <?php echo htmlspecialchars($property['category'] ?? 'Apartment'); ?>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-600">
+                                        <?php echo htmlspecialchars(ucfirst($property['property_status'] ?? 'available')); ?>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900">
                                         <?php echo $property['price'] ? '₹' . number_format($property['price'], 2) : '-'; ?>
