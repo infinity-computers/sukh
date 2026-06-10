@@ -243,7 +243,7 @@ function selected_attr($current, $value)
                 </div>
             </section>
 
-            <section id="rentFields" class="space-y-4 hidden">
+            <section id="rentFields" class="space-y-4">
                 <h2 class="text-lg font-semibold text-gray-800">Rent-Specific Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -264,7 +264,7 @@ function selected_attr($current, $value)
                 </div>
             </section>
 
-            <section id="commercialFields" class="space-y-4 hidden">
+            <section id="commercialFields" class="space-y-4">
                 <h2 class="text-lg font-semibold text-gray-800">Commercial Property Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div><label class="block text-gray-700 font-medium mb-2">Washroom Available</label><select name="washroom_available" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
@@ -361,21 +361,13 @@ function selected_attr($current, $value)
         }
 
         function updateConditionalSections() {
-            const propertyType = document.getElementById('propertyType');
-            const category = document.getElementById('propertyCategory');
-            const rentFields = document.getElementById('rentFields');
-            const commercialFields = document.getElementById('commercialFields');
-
-            const isRent = propertyType && propertyType.value === 'rent';
-            const selectedCategory = category ? category.value : '';
-            const isCommercial = ['Commercial Shop', 'Office', 'Warehouse'].includes(selectedCategory);
-
-            if (rentFields) rentFields.classList.toggle('hidden', !isRent);
-            if (commercialFields) commercialFields.classList.toggle('hidden', !isCommercial);
+            // Keep all sections visible so every field is available on the form.
         }
 
-        document.getElementById('propertyType').addEventListener('change', updateConditionalSections);
-        document.getElementById('propertyCategory').addEventListener('change', updateConditionalSections);
+        const propertyTypeEl = document.getElementById('propertyType');
+        const propertyCategoryEl = document.getElementById('propertyCategory');
+        if (propertyTypeEl) propertyTypeEl.addEventListener('change', updateConditionalSections);
+        if (propertyCategoryEl) propertyCategoryEl.addEventListener('change', updateConditionalSections);
         updateConditionalSections();
         updateImageCount();
     </script>
