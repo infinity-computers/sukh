@@ -2,6 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../src/utils/PropertyHelpers.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header('Location: index.php');
@@ -21,115 +22,82 @@ if ($current_time - $last_activity > $timeout) {
 $_SESSION['last_activity'] = $current_time;
 
 $error = '';
-$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $description = trim($_POST['description'] ?? '');
-    $address = trim($_POST['address'] ?? '');
-    $property_type = in_array(($_POST['property_type'] ?? 'sell'), ['sell', 'rent'], true) ? $_POST['property_type'] : 'sell';
-    $category = trim($_POST['category'] ?? 'Apartment');
-    $property_status = in_array(($_POST['property_status'] ?? 'available'), ['available', 'sold', 'rented'], true) ? $_POST['property_status'] : 'available';
-    $booking_enabled = !empty($_POST['booking_enabled']) ? 1 : 0;
+    $form = sukhdham_normalize_property_form($_POST);
 
-    $price = !empty($_POST['price'])
-        ? floatval($_POST['price'])
-        : null;
-
-    $bedrooms = intval($_POST['bedrooms'] ?? 0);
-    $bathrooms = intval($_POST['bathrooms'] ?? 0);
-    $area_sqft = intval($_POST['area_sqft'] ?? 0);
-    $title = generatePropertyTitle($property_type, $category, $bedrooms);
-
-    if (empty($address)) {
+    if ($form['address'] === '') {
         $error = 'Address is required';
     } else {
+        $admin_id = (int) $_SESSION['admin_id'];
+        $title = generatePropertyTitle($form['property_type'], $form['category'], $form['bedrooms']);
 
-        $admin_id = $_SESSION['admin_id'];
-
-        $stmt = $conn->prepare("
-            INSERT INTO properties
-            (
-                admin_id,
-                title,
-                description,
-                address,
-                price,
-                bedrooms,
-                bathrooms,
-                area_sqft,
-                property_type,
-                category,
-                property_status,
-                booking_enabled,
-                status
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
-        ");
+        $stmt = $conn->prepare("\n            INSERT INTO properties\n            (\n                admin_id,\n                title,\n                description,\n                address,\n                price,\n                security_deposit,\n                maintenance_charges,\n                available_from,\n                furnishing_type,\n                bedrooms,\n                bathrooms,\n                balconies,\n                floor_number,\n                total_floors,\n                area_sqft,\n                carpet_area,\n                parking,\n                water_supply,\n                electricity_backup,\n                facing_direction,\n                property_type,\n                category,\n                property_status,\n                booking_enabled,\n                amenities,\n                tenant_preferred,\n                lease_duration,\n                available_immediately,\n                bills_included,\n                pets_allowed,\n                washroom_available,\n                pantry_available,\n                cabin_count,\n                parking_spaces,\n                status\n            )\n            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')\n        ");
 
         if (!$stmt) {
-            die("Prepare failed: " . $conn->error);
+            die('Prepare failed: ' . $conn->error);
         }
 
-        // FIXED TYPES
-        $stmt->bind_param(
-            'isssdiiisssi',
+        $bindValues = [
             $admin_id,
             $title,
-            $description,
-            $address,
-            $price,
-            $bedrooms,
-            $bathrooms,
-            $area_sqft,
-            $property_type,
-            $category,
-            $property_status,
-            $booking_enabled
-        );
+            $form['description'],
+            $form['address'],
+            $form['price'],
+            $form['security_deposit'],
+            $form['maintenance_charges'],
+            $form['available_from'],
+            $form['furnishing_type'],
+            $form['bedrooms'],
+            $form['bathrooms'],
+            $form['balconies'],
+            $form['floor_number'],
+            $form['total_floors'],
+            $form['area_sqft'],
+            $form['carpet_area'],
+            $form['parking'],
+            $form['water_supply'],
+            $form['electricity_backup'],
+            $form['facing_direction'],
+            $form['property_type'],
+            $form['category'],
+            $form['property_status'],
+            $form['booking_enabled'],
+            $form['amenities'],
+            $form['tenant_preferred'],
+            $form['lease_duration'],
+            $form['available_immediately'],
+            $form['bills_included'],
+            $form['pets_allowed'],
+            $form['washroom_available'],
+            $form['pantry_available'],
+            $form['cabin_count'],
+            $form['parking_spaces'],
+        ];
+
+        $types = 'isssdddss' . 'iiiiii' . 'd' . 'ssss' . 'sss' . 'i' . 'ssssssss' . 'ii';
+        sukhdham_bind_stmt_values($stmt, $types, $bindValues);
 
         if ($stmt->execute()) {
-
             $property_id = $conn->insert_id;
 
-            // HANDLE IMAGES
             if (!empty($_POST['image_data'])) {
-
                 $image_data = json_decode($_POST['image_data'], true);
 
-                if ($image_data && is_array($image_data)) {
-
+                if (is_array($image_data)) {
                     $primary_set = false;
 
                     foreach ($image_data as $index => $base64_image) {
+                        $result = sukhdham_save_base64_property_image($base64_image, $property_id, 'Sukhdham');
 
-                        $result = saveBase64Image($base64_image, $property_id);
-
-                        if ($result['success']) {
-
+                        if (!empty($result['success'])) {
                             $is_primary = (!$primary_set && $index === 0) ? 1 : 0;
 
-                            $img_stmt = $conn->prepare("
-                                INSERT INTO property_images
-                                (
-                                    property_id,
-                                    image_url,
-                                    is_primary
-                                )
-                                VALUES (?, ?, ?)
-                            ");
-
+                            $img_stmt = $conn->prepare("INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, ?)");
                             if ($img_stmt) {
-
-                                $img_stmt->bind_param(
-                                    'isi',
-                                    $property_id,
-                                    $result['url'],
-                                    $is_primary
-                                );
-
+                                $img_stmt->bind_param('isi', $property_id, $result['url'], $is_primary);
                                 $img_stmt->execute();
                                 $img_stmt->close();
-
                                 if ($is_primary) {
                                     $primary_set = true;
                                 }
@@ -141,53 +109,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             header('Location: dashboard.php');
             exit;
-
-        } else {
-            $error = 'Failed to create property: ' . $stmt->error;
         }
 
+        $error = 'Failed to create property: ' . $stmt->error;
         $stmt->close();
     }
 }
 
-function saveBase64Image($base64_data, $property_id)
+$selectedPropertyType = 'sell';
+$selectedCategory = 'Apartment';
+$selectedStatus = 'available';
+$selectedFurnishing = 'Unfurnished';
+$selectedTenant = 'Any';
+$selectedWater = '24 Hours';
+$selectedDirection = 'East';
+$selectedAmenities = [];
+
+function selected_attr($current, $value)
 {
-    $timestamp = time();
-    $random = rand(1000, 9999);
-
-    $filename = "property_{$property_id}_{$timestamp}_{$random}.jpg";
-
-    $filepath = UPLOAD_DIR . $filename;
-
-    $data = explode(',', $base64_data);
-
-    if (count($data) < 2) {
-        return [
-            'success' => false,
-            'error' => 'Invalid base64 image'
-        ];
-    }
-
-    $image_content = base64_decode($data[1]);
-
-    if ($image_content === false) {
-        return [
-            'success' => false,
-            'error' => 'Base64 decode failed'
-        ];
-    }
-
-    if (file_put_contents($filepath, $image_content) === false) {
-        return [
-            'success' => false,
-            'error' => 'Failed to save image'
-        ];
-    }
-
-    return [
-        'success' => true,
-        'url' => UPLOAD_URL . $filename
-    ];
+    return $current === $value ? 'selected' : '';
 }
 ?>
 <!DOCTYPE html>
@@ -200,253 +140,243 @@ function saveBase64Image($base64_data, $property_id)
 </head>
 <body class="bg-gray-100">
     <?php include __DIR__ . '/components/navbar.php'; ?>
-    
-    <div class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+
+    <div class="max-w-5xl mx-auto px-4 py-6 sm:py-8">
         <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8">
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 break-words">Add New Property</h1>
             <a href="dashboard.php" class="text-blue-600 hover:text-blue-800 text-sm sm:text-base">← Back to Dashboard</a>
         </div>
-        
+
         <?php if ($error): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
-        
-        <form method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Property Type *</label>
-                    <select name="property_type" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="sell" selected>Sell</option>
-                        <option value="rent">Rent</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Property Category *</label>
-                    <select name="category" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="Apartment" selected>Apartment</option>
-                        <option value="House">House</option>
-                        <option value="Villa">Villa</option>
-                        <option value="Commercial">Commercial</option>
-                        <option value="Plot">Plot</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-            </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Property Status *</label>
-                    <select name="property_status" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="available">Available</option>
-                        <option value="sold">Sold</option>
-                        <option value="rented">Rented</option>
-                    </select>
+        <form method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-xl p-5 sm:p-8 space-y-8">
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Basic Property Details</h2>
                 </div>
-                <div class="flex items-center gap-3 mt-7">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Property Type *</label>
+                        <select name="property_type" id="propertyType" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="sell" <?php echo selected_attr($selectedPropertyType, 'sell'); ?>>Sell</option>
+                            <option value="rent" <?php echo selected_attr($selectedPropertyType, 'rent'); ?>>Rent</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Property Category *</label>
+                        <select name="category" id="propertyCategory" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <?php foreach (sukhdham_property_category_options() as $item): ?>
+                                <option value="<?php echo htmlspecialchars($item); ?>" <?php echo selected_attr($selectedCategory, $item); ?>><?php echo htmlspecialchars($item); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Price (₹)</label>
+                        <input type="number" name="price" step="0.01" min="0" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter price">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Security Deposit (₹)</label>
+                        <input type="number" name="security_deposit" step="0.01" min="0" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Security deposit">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Maintenance Charges (₹)</label>
+                        <input type="number" name="maintenance_charges" step="0.01" min="0" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Maintenance charges">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Available From</label>
+                        <input type="date" name="available_from" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Furnishing Type</label>
+                        <select name="furnishing_type" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <?php foreach (sukhdham_furnishing_options() as $item): ?>
+                                <option value="<?php echo htmlspecialchars($item); ?>" <?php echo selected_attr($selectedFurnishing, $item); ?>><?php echo htmlspecialchars($item); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Property Status *</label>
+                        <select name="property_status" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <?php foreach (['available' => 'Available', 'rented' => 'Rented', 'sold' => 'Sold'] as $value => $label): ?>
+                                <option value="<?php echo htmlspecialchars($value); ?>" <?php echo selected_attr($selectedStatus, $value); ?>><?php echo htmlspecialchars($label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-3">
                     <input type="checkbox" name="booking_enabled" id="booking_enabled" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
                     <label for="booking_enabled" class="text-gray-700 font-medium">Booking Available</label>
                 </div>
-            </div>
+            </section>
 
-            <div class="mb-6">
+            <section>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Property Specifications</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><label class="block text-gray-700 font-medium mb-2">Total Bedrooms</label><input type="number" name="bedrooms" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Total Bathrooms</label><input type="number" name="bathrooms" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Balconies</label><input type="number" name="balconies" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Floor Number</label><input type="number" name="floor_number" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Total Floors</label><input type="number" name="total_floors" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Area (Sq.ft)</label><input type="number" name="area_sqft" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Carpet Area (Sq.ft)</label><input type="number" name="carpet_area" step="0.01" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Parking</label><select name="parking" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Water Supply</label><select name="water_supply" class="w-full px-4 py-2 border rounded-lg"><?php foreach (sukhdham_water_supply_options() as $item): ?><option value="<?php echo htmlspecialchars($item); ?>" <?php echo selected_attr($selectedWater, $item); ?>><?php echo htmlspecialchars($item); ?></option><?php endforeach; ?></select></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Electricity Backup</label><select name="electricity_backup" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Facing Direction</label><select name="facing_direction" class="w-full px-4 py-2 border rounded-lg"><?php foreach (sukhdham_facing_options() as $item): ?><option value="<?php echo htmlspecialchars($item); ?>" <?php echo selected_attr($selectedDirection, $item); ?>><?php echo htmlspecialchars($item); ?></option><?php endforeach; ?></select></div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Amenities</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                    <?php foreach (sukhdham_amenity_options() as $amenity): ?>
+                        <label class="flex items-center gap-3 border rounded-xl px-3 py-2 bg-gray-50 hover:bg-blue-50 cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="<?php echo htmlspecialchars($amenity); ?>" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            <span class="text-sm text-gray-700"><?php echo htmlspecialchars($amenity); ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
+            <section id="rentFields" class="space-y-4 hidden">
+                <h2 class="text-lg font-semibold text-gray-800">Rent-Specific Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Tenant Preferred</label>
+                        <select name="tenant_preferred" class="w-full px-4 py-2 border rounded-lg">
+                            <?php foreach (sukhdham_tenant_preferred_options() as $item): ?>
+                                <option value="<?php echo htmlspecialchars($item); ?>" <?php echo selected_attr($selectedTenant, $item); ?>><?php echo htmlspecialchars($item); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Lease Duration</label>
+                        <input type="text" name="lease_duration" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g. 11 months">
+                    </div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Available Immediately</label><select name="available_immediately" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Bills Included</label><select name="bills_included" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Pets Allowed</label><select name="pets_allowed" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
+                </div>
+            </section>
+
+            <section id="commercialFields" class="space-y-4 hidden">
+                <h2 class="text-lg font-semibold text-gray-800">Commercial Property Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-gray-700 font-medium mb-2">Washroom Available</label><select name="washroom_available" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Pantry Available</label><select name="pantry_available" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Cabin Count</label><input type="number" name="cabin_count" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Parking Spaces</label><input type="number" name="parking_spaces" min="0" class="w-full px-4 py-2 border rounded-lg"></div>
+                </div>
+            </section>
+
+            <section>
                 <label class="block text-gray-700 font-medium mb-2">Description</label>
-                <textarea name="description" rows="6" 
-                          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Property description"></textarea>
-            </div>
-            
-            <div class="mb-6">
+                <textarea name="description" rows="6" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Property description"></textarea>
+            </section>
+
+            <section>
                 <label class="block text-gray-700 font-medium mb-2">Address *</label>
-                <input type="text" name="address" required 
-                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                       placeholder="Full address">
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Price (₹)</label>
-                    <input type="number" name="price" step="0.01" min="0"
-                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Enter price">
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Area (Sq.ft)</label>
-                    <input type="number" name="area_sqft" min="0"
-                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Area in sq ft">
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Bedrooms</label>
-                    <input type="number" name="bedrooms" min="0"
-                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Number of bedrooms">
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Bathrooms</label>
-                    <input type="number" name="bathrooms" min="0"
-                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Number of bathrooms">
-                </div>
-            </div>
-            
-            <div class="mb-6">
+                <input type="text" name="address" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Full address">
+            </section>
+
+            <section>
                 <label class="block text-gray-700 font-medium mb-2">Images (<span id="imageCount">0</span>/10)</label>
-                <button type="button" id="addImageBtn" onclick="document.getElementById('imageInput').click()" 
-                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition mb-4 w-full sm:w-auto">
-                    + Add Image
-                </button>
-                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageSelect(this)">
+                <button type="button" id="addImageBtn" onclick="document.getElementById('imageInput').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition mb-4 w-full sm:w-auto">+ Add Image</button>
+                <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(this)">
                 <p class="text-gray-500 text-sm mb-2">Minimum 800x600px, Max 5MB per image</p>
                 <div id="imagePreview" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4"></div>
                 <input type="hidden" name="image_data" id="imageData">
-            </div>
-            
+            </section>
+
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button type="submit" 
-                        class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition w-full sm:w-auto">
-                    Create Property
-                </button>
-                <a href="dashboard.php" 
-                   class="bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center w-full sm:w-auto">
-                    Cancel
-                </a>
+                <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition w-full sm:w-auto">Create Property</button>
+                <a href="dashboard.php" class="bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center w-full sm:w-auto">Cancel</a>
             </div>
         </form>
     </div>
-    
+
     <script>
         let uploadedImages = [];
         const MAX_IMAGES = 10;
-        
+
         function updateImageCount() {
-            document.getElementById('imageCount').textContent = uploadedImages.length;
-            document.getElementById('addImageBtn').disabled = uploadedImages.length >= MAX_IMAGES;
-            if (uploadedImages.length >= MAX_IMAGES) {
-                document.getElementById('addImageBtn').textContent = 'Max images reached';
-            } else {
-                document.getElementById('addImageBtn').textContent = '+ Add Image';
+            const count = document.getElementById('imageCount');
+            const addBtn = document.getElementById('addImageBtn');
+            if (count) count.textContent = uploadedImages.length;
+            if (addBtn) {
+                addBtn.disabled = uploadedImages.length >= MAX_IMAGES;
+                addBtn.textContent = uploadedImages.length >= MAX_IMAGES ? 'Max images reached' : '+ Add Image';
             }
         }
-        
-        function validateImage(file) {
-            const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-            const MIN_WIDTH = 800;
-            const MIN_HEIGHT = 600;
-            
+
+        function handleImageSelect(input) {
+            if (!input.files || !input.files[0]) return;
+            if (uploadedImages.length >= MAX_IMAGES) {
+                alert('Maximum image limit reached');
+                return;
+            }
+
+            const file = input.files[0];
+            const MAX_SIZE = 5 * 1024 * 1024;
             if (file.size > MAX_SIZE) {
                 alert('File size exceeds 5MB limit');
-                return false;
+                return;
             }
-            
-            const img = new Image();
-            const objectUrl = URL.createObjectURL(file);
-            
-            let isValid = false;
-            img.onload = function() {
-                if (img.width < MIN_WIDTH || img.height < MIN_HEIGHT) {
-                    alert('Image must be at least 800x600 pixels');
-                } else {
-                    isValid = true;
-                }
-                URL.revokeObjectURL(objectUrl);
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImages.push({ dataUrl: e.target.result });
+                renderPreview();
+                updateImageCount();
             };
-            
-            return new Promise((resolve) => {
-                img.onload = function() {
-                    if (img.width < MIN_WIDTH || img.height < MIN_HEIGHT) {
-                        alert('Image must be at least 800x600 pixels');
-                        resolve(false);
-                    } else {
-                        resolve(true);
-                    }
-                    URL.revokeObjectURL(objectUrl);
-                };
-                img.src = objectUrl;
-            });
+            reader.readAsDataURL(file);
         }
-        
-        async function handleImageSelect(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                
-                if (uploadedImages.length >= MAX_IMAGES) {
-                    alert('Maximum 10 images allowed');
-                    input.value = '';
-                    return;
-                }
-                
-                const isValid = await validateImage(file);
-                if (!isValid) {
-                    input.value = '';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImages.push({
-                        file: file,
-                        dataUrl: e.target.result,
-                        isPrimary: uploadedImages.length === 0
-                    });
-                    renderPreview();
-                    updateImageCount();
-                    input.value = '';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function setPrimary(index) {
-            uploadedImages.forEach((img, i) => {
-                img.isPrimary = (i === index);
-            });
-            renderPreview();
-        }
-        
-        function removeImage(index) {
+
+        function removeNewImage(index) {
             uploadedImages.splice(index, 1);
-            if (uploadedImages.length > 0 && !uploadedImages.some(img => img.isPrimary)) {
-                uploadedImages[0].isPrimary = true;
-            }
             renderPreview();
             updateImageCount();
         }
-        
+
         function renderPreview() {
             const preview = document.getElementById('imagePreview');
+            if (!preview) return;
             preview.innerHTML = '';
-            
             uploadedImages.forEach((img, index) => {
                 const div = document.createElement('div');
                 div.className = 'relative border rounded-lg p-2 overflow-hidden';
                 div.innerHTML = `
                     <img src="${img.dataUrl}" class="w-full h-24 object-cover rounded mb-2">
-                    <div class="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
-                        <label class="flex items-center text-xs cursor-pointer">
-                            <input type="radio" name="primary_image" ${img.isPrimary ? 'checked' : ''} 
-                                   onchange="setPrimary(${index})" class="mr-1">
-                            Primary
-                        </label>
-                        <button type="button" onclick="removeImage(${index})" 
-                                class="text-red-500 hover:text-red-700 text-sm text-left sm:text-right">✕ Remove</button>
-                    </div>
+                    <button type="button" onclick="removeNewImage(${index})" class="text-red-500 hover:text-red-700 text-sm w-full text-left">✕ Remove</button>
                 `;
                 preview.appendChild(div);
             });
-            
-            document.getElementById('imageData').value = JSON.stringify(uploadedImages.map(img => img.dataUrl));
+            const imageData = document.getElementById('imageData');
+            if (imageData) imageData.value = JSON.stringify(uploadedImages.map(img => img.dataUrl));
         }
-        
-        document.querySelector('form').onsubmit = function(e) {
-            if (uploadedImages.length > 0) {
-                document.getElementById('imageData').value = JSON.stringify(uploadedImages.map(img => img.dataUrl));
-            }
-        };
+
+        function updateConditionalSections() {
+            const propertyType = document.getElementById('propertyType');
+            const category = document.getElementById('propertyCategory');
+            const rentFields = document.getElementById('rentFields');
+            const commercialFields = document.getElementById('commercialFields');
+
+            const isRent = propertyType && propertyType.value === 'rent';
+            const selectedCategory = category ? category.value : '';
+            const isCommercial = ['Commercial Shop', 'Office', 'Warehouse'].includes(selectedCategory);
+
+            if (rentFields) rentFields.classList.toggle('hidden', !isRent);
+            if (commercialFields) commercialFields.classList.toggle('hidden', !isCommercial);
+        }
+
+        document.getElementById('propertyType').addEventListener('change', updateConditionalSections);
+        document.getElementById('propertyCategory').addEventListener('change', updateConditionalSections);
+        updateConditionalSections();
+        updateImageCount();
     </script>
 </body>
 </html>
