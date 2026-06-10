@@ -288,7 +288,7 @@ function selected_attr($current, $value)
                 <label class="block text-gray-700 font-medium mb-2">Images (<span id="imageCount">0</span>/10)</label>
                 <button type="button" id="addImageBtn" onclick="document.getElementById('imageInput').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition mb-4 w-full sm:w-auto">+ Add Image</button>
                 <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(this)">
-                <p class="text-gray-500 text-sm mb-2">Minimum 800x600px, Max 5MB per image</p>
+                <p class="text-gray-500 text-sm mb-2">Max 5MB per image</p>
                 <div id="imagePreview" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4"></div>
                 <input type="hidden" name="image_data" id="imageData">
             </section>
