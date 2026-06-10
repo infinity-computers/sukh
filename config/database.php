@@ -49,8 +49,6 @@ define('UPLOAD_DIR', __DIR__ . '/../public/uploads/properties/');
 define('UPLOAD_URL', '/public/uploads/properties/');
 define('MAX_IMAGE_SIZE', 5 * 1024 * 1024); // 5MB
 define('MAX_IMAGES_PER_PROPERTY', 10);
-define('MIN_IMAGE_WIDTH', 800);
-define('MIN_IMAGE_HEIGHT', 600);
 define('ALLOWED_IMAGE_TYPES', ['jpg', 'jpeg', 'png', 'webp']);
 
 // Create uploads directory if it doesn't exist

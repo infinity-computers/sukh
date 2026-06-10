@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $admin_id = (int) $_SESSION['admin_id'];
         $title = generatePropertyTitle($form['property_type'], $form['category'], $form['bedrooms']);
 
-        $stmt = $conn->prepare("\n            INSERT INTO properties\n            (\n                admin_id,\n                title,\n                description,\n                address,\n                price,\n                security_deposit,\n                maintenance_charges,\n                available_from,\n                furnishing_type,\n                bedrooms,\n                bathrooms,\n                balconies,\n                floor_number,\n                total_floors,\n                area_sqft,\n                carpet_area,\n                parking,\n                water_supply,\n                electricity_backup,\n                facing_direction,\n                property_type,\n                category,\n                property_status,\n                booking_enabled,\n                amenities,\n                tenant_preferred,\n                lease_duration,\n                available_immediately,\n                bills_included,\n                pets_allowed,\n                washroom_available,\n                pantry_available,\n                cabin_count,\n                parking_spaces,\n                status\n            )\n            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')\n        ");
+        $stmt = $conn->prepare("\n            INSERT INTO properties\n            (\n                admin_id,\n                title,\n                description,\n                address,\n                price,\n                security_deposit,\n                maintenance_charges,\n                available_from,\n                furnishing_type,\n                bedrooms,\n                bathrooms,\n                balconies,\n                floor_number,\n                total_floors,\n                area_sqft,\n                carpet_area,\n                parking,\n                water_supply,\n                electricity_backup,\n                facing_direction,\n                property_type,\n                category,\n                property_status,\n                booking_enabled,\n                amenities,\n                tenant_preferred,\n                lease_duration,\n                available_immediately,\n                bills_included,\n                pets_allowed,\n                washroom_available,\n                pantry_available,\n                cabin_count,\n                parking_spaces,\n                status\n            )\n            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n        ");
 
         if (!$stmt) {
             die('Prepare failed: ' . $conn->error);
@@ -73,9 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $form['pantry_available'],
             $form['cabin_count'],
             $form['parking_spaces'],
+            'active',
         ];
 
-        $types = 'isssdddss' . 'iiiiii' . 'd' . 'ssss' . 'sss' . 'i' . 'ssssssss' . 'ii';
+        $types = 'isssdddss' . 'iiiiii' . 'd' . 'ssss' . 'sss' . 'i' . 'ssssssss' . 'iii';
         sukhdham_bind_stmt_values($stmt, $types, $bindValues);
 
         if ($stmt->execute()) {
