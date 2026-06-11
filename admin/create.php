@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'active',
         ];
 
-        $types = 'isssdddss' . 'iiiiii' . 'd' . 'ssss' . 'sss' . 'i' . 'ssssssss' . 'iii';
+        $types = 'isssdddss' . 'iiiiii' . 'd' . 'ssss' . 'sss' . 'i' . 'ssssssss' . 'iis';
         sukhdham_bind_stmt_values($stmt, $types, $bindValues);
 
         if ($stmt->execute()) {
