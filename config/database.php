@@ -218,6 +218,8 @@ function ensureSchema($conn)
     if (!columnExists($conn, 'properties', 'booking_enabled')) {
         $conn->query("ALTER TABLE properties ADD COLUMN booking_enabled TINYINT(1) NOT NULL DEFAULT 1 AFTER property_status");
     }
+
+    $conn->query("UPDATE properties SET status = 'active' WHERE status IS NULL OR status = ''");
 }
 
 function generatePropertyTitle($propertyType, $category, $bedrooms = 0)

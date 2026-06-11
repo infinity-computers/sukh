@@ -232,7 +232,7 @@ function selected_attr($current, $value)
             </section>
 
             <section>
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Amenities And Attributes</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Amenities</h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
                     <?php foreach (sukhdham_amenity_options() as $amenity): ?>
                         <label class="flex items-center gap-3 border rounded-xl px-3 py-2 bg-gray-50 hover:bg-blue-50 cursor-pointer">
