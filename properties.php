@@ -276,10 +276,14 @@ function query_string_with_page(array $base, $page)
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 1.25rem;
+            align-items: stretch;
         }
         .property-card-modern {
             overflow: hidden;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         .property-card-modern:hover {
             transform: translateY(-4px);
@@ -297,6 +301,9 @@ function query_string_with_page(array $base, $page)
         }
         .property-body {
             padding: 1rem 1rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
         .badge-row {
             display: flex;
@@ -325,7 +332,8 @@ function query_string_with_page(array $base, $page)
             color: #475569;
             font-size: 0.95rem;
             line-height: 1.65;
-            min-height: 4.8rem;
+            min-height: 3.2rem;
+            flex: 1;
         }
         .meta-grid {
             display: grid;
@@ -349,7 +357,7 @@ function query_string_with_page(array $base, $page)
         .actions {
             display: flex;
             gap: 0.75rem;
-            margin-top: 0.95rem;
+            margin-top: auto;
         }
         .actions .btn {
             flex: 1;
@@ -501,11 +509,13 @@ function query_string_with_page(array $base, $page)
                                     <div class="badge-row">
                                         <span class="pill"><?php echo htmlspecialchars(ucfirst($property['property_type'] ?? 'sell')); ?></span>
                                         <span class="pill"><?php echo htmlspecialchars($property['category'] ?? 'Apartment'); ?></span>
-                                        <span class="pill"><?php echo htmlspecialchars($property['furnishing_type'] ?? 'Unfurnished'); ?></span>
-                                        <span class="pill" style="background:#fff7ed;color:#c2410c;"><?php echo htmlspecialchars(ucfirst($property['property_status'] ?? 'available')); ?></span>
                                     </div>
 
                                     <h3 style="font-size:1.1rem;font-weight:800;color:#0f172a;line-height:1.35;"><?php echo htmlspecialchars($property['title'] ?? 'Property'); ?></h3>
+
+                                    <p style="color:#64748b;font-size:0.92rem;line-height:1.55;margin-top:0.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.65rem;">
+                                        <?php echo !empty($property['address']) ? htmlspecialchars($property['address']) : 'Address available on request'; ?>
+                                    </p>
 
                                     <?php if ($property['price']): ?>
                                         <p class="price">₹<?php echo number_format($property['price'], 2); ?></p>
@@ -514,19 +524,10 @@ function query_string_with_page(array $base, $page)
                                     <div class="meta-grid">
                                         <div class="meta-item"><strong>Bedrooms / Baths</strong><?php echo (int) ($property['bedrooms'] ?? 0); ?> BHK / <?php echo (int) ($property['bathrooms'] ?? 0); ?> Bath</div>
                                         <div class="meta-item"><strong>Area</strong><?php echo !empty($property['carpet_area']) ? number_format((float) $property['carpet_area'], 0) . ' sq ft' : (!empty($property['area_sqft']) ? number_format((float) $property['area_sqft'], 0) . ' sq ft' : '-'); ?></div>
-                                        <div class="meta-item"><strong>Parking</strong><?php echo htmlspecialchars($property['parking'] ?? 'No'); ?></div>
-                                        <div class="meta-item"><strong>Available</strong><?php echo htmlspecialchars(ucfirst($property['property_status'] ?? 'available')); ?></div>
+                                        <div class="meta-item"><strong>Furnishing</strong><?php echo htmlspecialchars($property['furnishing_type'] ?? 'Unfurnished'); ?></div>
                                     </div>
 
-                                    <p class="summary"><?php echo !empty($property['description']) ? htmlspecialchars(substr(trim(strip_tags($property['description'])), 0, 165)) . (strlen(trim(strip_tags($property['description']))) > 165 ? '...' : '') : 'No description added yet.'; ?></p>
-
-                                    <?php if (!empty($amenityList)): ?>
-                                        <div style="display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.9rem;">
-                                            <?php foreach (array_slice($amenityList, 0, 5) as $amenity): ?>
-                                                <span class="pill" style="background:#f8fafc;color:#475569;border:1px solid #e2e8f0;"><?php echo htmlspecialchars($amenity); ?></span>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php endif; ?>
+                                    <p class="summary"><?php echo !empty($property['description']) ? htmlspecialchars(substr(trim(strip_tags($property['description'])), 0, 120)) . (strlen(trim(strip_tags($property['description']))) > 120 ? '...' : '') : 'No description added yet.'; ?></p>
 
                                     <div class="actions">
                                         <a href="property.php?id=<?php echo $property['id']; ?>" class="btn">View Details</a>

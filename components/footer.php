@@ -31,7 +31,8 @@
             <div class="footer-col contact-col">
                 <h4>Contact</h4>
                 <p>📍 Zadeshwar, Bharuch, Gujarat</p>
-                <p>📞 +91 9376739237</p>
+                <p><a href="tel:919376739237">📞 Call Sukhdham Estate</a></p>
+                <p><a href="https://wa.me/919376739237" target="_blank" rel="noopener">💬 WhatsApp Sukhdham Estate</a></p>
                 <p>✉️ bharuch@sukhdham.in</p>
             </div>
         </div>

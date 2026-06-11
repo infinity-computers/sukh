@@ -96,6 +96,8 @@ $can_book = !empty($property['booking_enabled']) && ($property['property_status'
 $contact_phone = '+91 9376739237';
 $contact_whatsapp = '919376739237';
 $contact_email = 'bharuch@sukhdham.in';
+$contact_location = 'Zadeshwar, Bharuch, Gujarat';
+$contact_phone_href = preg_replace('/\D+/', '', $contact_phone);
 
 $priceLabel = !empty($property['price']) ? '₹' . number_format((float) $property['price'], 2) : 'Price on request';
 $areaValue = !empty($property['carpet_area']) ? number_format((float) $property['carpet_area'], 0) . ' sq ft carpet' : (!empty($property['area_sqft']) ? number_format((float) $property['area_sqft'], 0) . ' sq ft' : '-');
@@ -361,6 +363,42 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
         .contact-panel {
             padding: 1.2rem;
         }
+        .contact-cta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .contact-cta-grid .btn {
+            min-height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border-radius: 16px;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+        }
+        .contact-cta-grid .call-btn {
+            background: linear-gradient(135deg, #0f172a, #334155);
+        }
+        .contact-cta-grid .whatsapp-btn {
+            background: linear-gradient(135deg, #16a34a, #0f9d58);
+        }
+        .contact-cta-grid .btn:hover {
+            transform: translateY(-2px);
+        }
+        .contact-note {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 0.95rem;
+            color: #475569;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin-top: 0.85rem;
+        }
         .detail-section {
             margin-top: 1.2rem;
         }
@@ -380,6 +418,7 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
             .summary-grid,
             .spec-grid,
             .amenity-grid,
+            .contact-cta-grid,
             .contact-actions,
             .form-grid {
                 grid-template-columns: 1fr;
@@ -462,9 +501,9 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                         <h3 class="section-title" style="margin-bottom:0.35rem;">Contact</h3>
                         <p style="color:#64748b;margin-bottom:0.9rem;">Reach out directly for availability, pricing, or quick inquiries.</p>
 
-                        <div class="contact-actions">
-                            <a class="btn" href="tel:<?php echo preg_replace('/\s+/', '', $contact_phone); ?>">Call</a>
-                            <a class="btn whatsapp-btn" href="https://wa.me/<?php echo htmlspecialchars($contact_whatsapp); ?>?text=<?php echo urlencode('Hi Sukhdham, I am interested in ' . ($property['title'] ?? 'this property') . ' on ' . $property['address']); ?>" target="_blank" rel="noopener">WhatsApp</a>
+                        <div class="contact-cta-grid">
+                            <a class="btn call-btn" href="tel:<?php echo htmlspecialchars($contact_phone_href); ?>">Call Sukhdham</a>
+                            <a class="btn whatsapp-btn" href="https://wa.me/<?php echo htmlspecialchars($contact_whatsapp); ?>?text=<?php echo urlencode('Hi Sukhdham, I am interested in ' . ($property['title'] ?? 'this property') . ' on ' . $property['address']); ?>" target="_blank" rel="noopener">WhatsApp Sukhdham</a>
                         </div>
 
                         <form id="inquiryForm" class="detail-section">
@@ -476,9 +515,10 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                             </div>
                         </form>
 
-                        <div style="margin-top:0.85rem;color:#475569;font-size:0.92rem;line-height:1.7;">
+                        <div class="contact-note">
+                            <div><strong style="color:#0f172a;">Office:</strong> <?php echo htmlspecialchars($contact_location); ?></div>
                             <div><strong style="color:#0f172a;">Email:</strong> <?php echo htmlspecialchars($contact_email); ?></div>
-                            <div><strong style="color:#0f172a;">Phone:</strong> <?php echo htmlspecialchars($contact_phone); ?></div>
+                            <div style="margin-top:0.35rem;">Use the buttons above to reach Sukhdham Estate directly.</div>
                         </div>
                     </section>
                 </aside>
@@ -535,8 +575,8 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
             <section class="panel detail-section">
                 <h3 class="section-title">Contact & Inquiry</h3>
                 <div class="contact-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
-                    <div class="summary-item"><strong>Call</strong><a href="tel:<?php echo preg_replace('/\s+/', '', $contact_phone); ?>"><?php echo htmlspecialchars($contact_phone); ?></a></div>
-                    <div class="summary-item"><strong>WhatsApp</strong><a href="https://wa.me/<?php echo htmlspecialchars($contact_whatsapp); ?>" target="_blank" rel="noopener">Open chat</a></div>
+                    <div class="summary-item"><strong>Call Sukhdham</strong><a href="tel:<?php echo htmlspecialchars($contact_phone_href); ?>">Tap to call</a></div>
+                    <div class="summary-item"><strong>WhatsApp Sukhdham</strong><a href="https://wa.me/<?php echo htmlspecialchars($contact_whatsapp); ?>" target="_blank" rel="noopener">Open chat</a></div>
                     <div class="summary-item"><strong>Email</strong><a href="mailto:<?php echo htmlspecialchars($contact_email); ?>"><?php echo htmlspecialchars($contact_email); ?></a></div>
                 </div>
                 <p style="color:#64748b;margin:0.9rem 0 0;">Use the inquiry form in the sidebar or contact us directly for a prompt response.</p>
