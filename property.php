@@ -572,15 +572,6 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                 <?php endif; ?>
             </section>
 
-            <section class="panel detail-section">
-                <h3 class="section-title">Contact & Inquiry</h3>
-                <div class="contact-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
-                    <div class="summary-item"><strong>Call Sukhdham</strong><a href="tel:<?php echo htmlspecialchars($contact_phone_href); ?>">Tap to call</a></div>
-                    <div class="summary-item"><strong>WhatsApp Sukhdham</strong><a href="https://wa.me/<?php echo htmlspecialchars($contact_whatsapp); ?>" target="_blank" rel="noopener">Open chat</a></div>
-                    <div class="summary-item"><strong>Email</strong><a href="mailto:<?php echo htmlspecialchars($contact_email); ?>"><?php echo htmlspecialchars($contact_email); ?></a></div>
-                </div>
-                <p style="color:#64748b;margin:0.9rem 0 0;">Use the inquiry form in the sidebar or contact us directly for a prompt response.</p>
-            </section>
         </div>
     </main>
 
