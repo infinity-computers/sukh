@@ -1046,6 +1046,21 @@ nav a:hover {
     color: var(--primary);
 }
 
+.footer-dark .footer-contact-line,
+.footer-dark .footer-contact-line a,
+.footer-dark .footer-static-text {
+    color: var(--white);
+}
+
+.footer-dark .footer-contact-line a:hover {
+    color: var(--primary);
+}
+
+.footer-dark .footer-static-text {
+    display: block;
+    line-height: 1.6;
+}
+
 .footer-dark .footer-grid {
     display: grid;
     grid-template-columns: 1fr;

@@ -3,6 +3,7 @@ session_start();
 
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/src/utils/PropertyHelpers.php';
+require_once __DIR__ . '/src/utils/Mailer.php';
 
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
 if ($conn->connect_error) {
@@ -19,11 +20,37 @@ if ($property_id <= 0) {
 $booking_success = '';
 $booking_error = '';
 
+$stmt = $conn->prepare('SELECT * FROM properties WHERE id = ? AND status = "active"');
+$stmt->bind_param('i', $property_id);
+$stmt->execute();
+$property = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+if (!$property) {
+    header('Location: properties.php');
+    exit;
+}
+
+$public_holidays = [];
+for ($yearOffset = 0; $yearOffset <= 1; $yearOffset++) {
+    $year = (int) date('Y') + $yearOffset;
+    $public_holidays = array_merge($public_holidays, [
+        sprintf('%d-01-26', $year),
+        sprintf('%d-08-15', $year),
+        sprintf('%d-10-02', $year),
+        sprintf('%d-12-25', $year),
+    ]);
+}
+
+$allowed_time_slots = [
+    '11:00:00' => '11:00 AM - 12:00 PM',
+    '15:00:00' => '03:00 PM - 04:00 PM',
+];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'book_visit') {
     $form_property_id = intval($_POST['property_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
-    $email = trim($_POST['email'] ?? '');
     $visit_date = trim($_POST['visit_date'] ?? '');
     $visit_time = trim($_POST['visit_time'] ?? '');
     $message = trim($_POST['message'] ?? '');
@@ -38,39 +65,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'book_
         $booking_error = 'Property not found.';
     } elseif (empty($booking_property['booking_enabled']) || $booking_property['property_status'] !== 'available') {
         $booking_error = 'Booking is currently disabled for this property.';
-    } elseif ($name === '' || $phone === '' || $email === '' || $visit_date === '' || $visit_time === '') {
+    } elseif ($name === '' || $phone === '' || $visit_date === '' || $visit_time === '') {
         $booking_error = 'Please fill in all required booking fields.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $booking_error = 'Please enter a valid email address.';
     } else {
         $today = new DateTime('today');
+        $minDate = (clone $today)->modify('+1 day');
+        $maxDate = (clone $today)->modify('+2 months');
         $selectedDate = DateTime::createFromFormat('Y-m-d', $visit_date);
+        $selectedDateValid = $selectedDate && $selectedDate->format('Y-m-d') === $visit_date;
+        $selectedDay = $selectedDateValid ? (int) $selectedDate->format('w') : null;
+        $normalizedTime = array_key_exists($visit_time, $allowed_time_slots) ? $visit_time : null;
 
-        if (!$selectedDate || $selectedDate < $today) {
-            $booking_error = 'Please choose a future visit date.';
+        if (!$selectedDateValid || $selectedDate < $minDate || $selectedDate > $maxDate) {
+            $booking_error = 'Please choose a visit date from tomorrow up to the next 2 months.';
+        } elseif ($selectedDay === 0) {
+            $booking_error = 'Sunday bookings are not available. Please choose another day.';
+        } elseif (in_array($visit_date, $public_holidays, true)) {
+            $booking_error = 'This day is marked as a public holiday and cannot be selected.';
+        } elseif (!$normalizedTime) {
+            $booking_error = 'Please select one of the available time slots.';
         } else {
             $stmt = $conn->prepare('INSERT INTO property_bookings (property_id, name, phone, email, visit_date, visit_time, message) VALUES (?, ?, ?, ?, ?, ?, ?)');
-            $stmt->bind_param('issssss', $property_id, $name, $phone, $email, $visit_date, $visit_time, $message);
+            $booking_email = '';
+            $stmt->bind_param('issssss', $property_id, $name, $phone, $booking_email, $visit_date, $visit_time, $message);
 
             if ($stmt->execute()) {
+                $submitted_booking_id = $stmt->insert_id;
                 $booking_success = 'Your site visit request has been submitted. We will contact you soon to confirm the schedule.';
+                Mailer::sendVisitRequestNotification([
+                    'name' => $name,
+                    'phone' => $phone,
+                    'visit_date' => $visit_date,
+                    'visit_time' => $allowed_time_slots[$visit_time],
+                    'property_title' => $property['title'] ?? 'Property',
+                    'property_address' => $property['address'] ?? '',
+                    'message' => $message,
+                    'to' => 'bharuch@sukhdham.in',
+                ]);
             } else {
                 $booking_error = 'Unable to save your booking right now. Please try again.';
             }
             $stmt->close();
         }
     }
-}
-
-$stmt = $conn->prepare('SELECT * FROM properties WHERE id = ? AND status = "active"');
-$stmt->bind_param('i', $property_id);
-$stmt->execute();
-$property = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
-if (!$property) {
-    header('Location: properties.php');
-    exit;
 }
 
 $stmt = $conn->prepare('SELECT * FROM property_images WHERE property_id = ? ORDER BY is_primary DESC, id ASC');
@@ -98,6 +135,9 @@ $contact_whatsapp = '919376739237';
 $contact_email = 'bharuch@sukhdham.in';
 $contact_location = 'Zadeshwar, Bharuch, Gujarat';
 $contact_phone_href = preg_replace('/\D+/', '', $contact_phone);
+$booking_min_date = (new DateTime('today'))->modify('+1 day')->format('Y-m-d');
+$booking_max_date = (new DateTime('today'))->modify('+2 months')->format('Y-m-d');
+$urgent_visit_text = 'Urgent site visit requested. Please contact our office or visit our shop for an immediate slot. A booking token of Rs. 500 is payable at the office and will be adjusted in the final rent if the property is booked through Sukhdham Estate. Office address: ' . $contact_location . '.';
 
 $priceLabel = !empty($property['price']) ? '₹' . number_format((float) $property['price'], 2) : 'Price on request';
 $areaValue = !empty($property['carpet_area']) ? number_format((float) $property['carpet_area'], 0) . ' sq ft carpet' : (!empty($property['area_sqft']) ? number_format((float) $property['area_sqft'], 0) . ' sq ft' : '-');
@@ -402,6 +442,26 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
         .detail-section {
             margin-top: 1.2rem;
         }
+        .booking-actions {
+            display: grid;
+            gap: 0.75rem;
+        }
+        .urgent-btn {
+            background: linear-gradient(135deg, #9a3412, #c2410c);
+        }
+        .urgent-panel {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 18px;
+            padding: 1rem 1.05rem;
+            margin-top: 0.85rem;
+            color: #7c2d12;
+            line-height: 1.7;
+        }
+        .slot-option[disabled] {
+            color: #94a3b8;
+            background: #f8fafc;
+        }
         @media (max-width: 1024px) {
             .detail-grid {
                 grid-template-columns: 1fr;
@@ -491,7 +551,10 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
 
                         <?php if ($can_book): ?>
                             <div class="booking-note">Bookings are open for this property. Choose a future date and preferred time slot.</div>
-                            <button type="button" class="btn" onclick="openBookingModal()">Book Site Visit</button>
+                            <div class="booking-actions">
+                                <button type="button" class="btn" onclick="openBookingModal()">Book Site Visit</button>
+                                <button type="button" class="btn urgent-btn" onclick="openUrgentBookingModal()">Urgent Booking</button>
+                            </div>
                         <?php else: ?>
                             <div class="booking-note">Booking is currently disabled for this property or it is not available.</div>
                         <?php endif; ?>
@@ -603,12 +666,8 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
 
                     <div class="form-grid" style="margin-top:0.9rem;">
                         <div>
-                            <label style="display:block;font-weight:700;margin-bottom:0.35rem;color:#334155;">Email</label>
-                            <input type="email" name="email" required>
-                        </div>
-                        <div>
                             <label style="display:block;font-weight:700;margin-bottom:0.35rem;color:#334155;">Preferred Visit Date</label>
-                            <input type="date" name="visit_date" min="<?php echo date('Y-m-d'); ?>" required>
+                            <input type="date" name="visit_date" min="<?php echo htmlspecialchars($booking_min_date); ?>" max="<?php echo htmlspecialchars($booking_max_date); ?>" required>
                         </div>
                     </div>
 
@@ -616,12 +675,12 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                         <label style="display:block;font-weight:700;margin-bottom:0.35rem;color:#334155;">Preferred Time Slot</label>
                         <select name="visit_time" required>
                             <option value="">Select a time slot</option>
-                            <option value="09:00:00">09:00 AM - 10:00 AM</option>
-                            <option value="10:00:00">10:00 AM - 11:00 AM</option>
+                            <option value="09:00:00" disabled class="slot-option">09:00 AM - 10:00 AM</option>
+                            <option value="10:00:00" disabled class="slot-option">10:00 AM - 11:00 AM</option>
                             <option value="11:00:00">11:00 AM - 12:00 PM</option>
-                            <option value="13:00:00">01:00 PM - 02:00 PM</option>
+                            <option value="13:00:00" disabled class="slot-option">01:00 PM - 02:00 PM</option>
                             <option value="15:00:00">03:00 PM - 04:00 PM</option>
-                            <option value="17:00:00">05:00 PM - 06:00 PM</option>
+                            <option value="17:00:00" disabled class="slot-option">05:00 PM - 06:00 PM</option>
                         </select>
                     </div>
 
@@ -632,11 +691,21 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
 
                     <button type="submit" class="btn" style="margin-top:1rem;">Submit Booking Request</button>
                 </form>
+
+                <div class="urgent-panel" id="urgentBookingPanel" style="display:none;">
+                    <h3 style="margin-bottom:0.35rem;color:#9a3412;font-size:1.1rem;font-weight:800;">Urgent Booking</h3>
+                    <p style="margin:0 0 0.65rem;">For an urgent site visit, please contact or visit our office directly.</p>
+                    <p style="margin:0 0 0.65rem;"><strong>Office Address:</strong> <?php echo htmlspecialchars($contact_location); ?></p>
+                    <p style="margin:0 0 0.65rem;"><strong>Booking Amount:</strong> Rs. 500 payable at the office. This amount will be adjusted in your final rent if you book through our services.</p>
+                    <p style="margin:0;"><?php echo htmlspecialchars($urgent_visit_text); ?></p>
+                </div>
             </div>
         </div>
     <?php endif; ?>
 
     <script>
+        const publicHolidays = <?php echo json_encode(array_values($public_holidays)); ?>;
+
         function changeImage(src, thumb) {
             const mainImage = document.getElementById('mainImage');
             if (mainImage) {
@@ -648,9 +717,25 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
 
         function openBookingModal() {
             const modal = document.getElementById('bookingModal');
+            const urgentPanel = document.getElementById('urgentBookingPanel');
             if (modal) {
                 modal.classList.add('open');
                 modal.setAttribute('aria-hidden', 'false');
+            }
+            if (urgentPanel) {
+                urgentPanel.style.display = 'none';
+            }
+        }
+
+        function openUrgentBookingModal() {
+            const modal = document.getElementById('bookingModal');
+            const urgentPanel = document.getElementById('urgentBookingPanel');
+            if (modal) {
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+            if (urgentPanel) {
+                urgentPanel.style.display = 'block';
             }
         }
 
@@ -677,6 +762,28 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                 if (event.target === modal) {
                     closeBookingModal();
                 }
+            });
+        }
+
+        const visitDateField = document.querySelector('input[name="visit_date"]');
+        if (visitDateField) {
+            visitDateField.addEventListener('input', function () {
+                const value = this.value;
+                if (!value) return;
+
+                const date = new Date(value + 'T00:00:00');
+                const day = date.getDay();
+                if (day === 0) {
+                    this.setCustomValidity('Sunday is not selectable.');
+                } else if (publicHolidays.includes(value)) {
+                    this.setCustomValidity('This date is a public holiday and cannot be selected.');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+
+            visitDateField.addEventListener('change', function () {
+                this.reportValidity();
             });
         }
     </script>

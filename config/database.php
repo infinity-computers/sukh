@@ -103,7 +103,7 @@ function ensureSchema($conn)
             property_id INT NOT NULL,
             name VARCHAR(255) NOT NULL,
             phone VARCHAR(30) NOT NULL,
-            email VARCHAR(255) NOT NULL,
+            email VARCHAR(255) DEFAULT NULL,
             visit_date DATE NOT NULL,
             visit_time TIME NOT NULL,
             message TEXT NULL,
@@ -113,6 +113,10 @@ function ensureSchema($conn)
             INDEX idx_visit_date (visit_date),
             INDEX idx_created_at (created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        if (columnExists($conn, 'property_bookings', 'email')) {
+            $conn->query("ALTER TABLE property_bookings MODIFY email VARCHAR(255) DEFAULT NULL");
+        }
 
         if (!columnExists($conn, 'properties', 'security_deposit')) {
             $conn->query("ALTER TABLE properties ADD COLUMN security_deposit DECIMAL(12,2) NULL AFTER price");
@@ -218,6 +222,8 @@ function ensureSchema($conn)
     if (!columnExists($conn, 'properties', 'booking_enabled')) {
         $conn->query("ALTER TABLE properties ADD COLUMN booking_enabled TINYINT(1) NOT NULL DEFAULT 1 AFTER property_status");
     }
+
+    $conn->query("INSERT IGNORE INTO admins (email) VALUES ('bharuch@sukhdham.in')");
 
     $conn->query("UPDATE properties SET status = 'active' WHERE status IS NULL OR status = ''");
 }

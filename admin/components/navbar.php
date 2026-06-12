@@ -9,6 +9,7 @@
             <div class="hidden md:flex items-center space-x-6">
                 <a href="dashboard.php" class="text-gray-700 hover:text-blue-600">Dashboard</a>
                 <a href="create.php" class="text-gray-700 hover:text-blue-600">Add Property</a>
+                <a href="bookings.php" class="text-gray-700 hover:text-blue-600">Visit Requests</a>
                 <a href="../index.html" class="text-gray-700 hover:text-blue-600">View Site</a>
                 <a href="logout.php" class="text-gray-700 hover:text-red-600">Logout</a>
             </div>
@@ -20,6 +21,7 @@
             <div class="flex flex-col gap-3 pt-4">
                 <a href="dashboard.php" class="text-gray-700 hover:text-blue-600">Dashboard</a>
                 <a href="create.php" class="text-gray-700 hover:text-blue-600">Add Property</a>
+                <a href="bookings.php" class="text-gray-700 hover:text-blue-600">Visit Requests</a>
                 <a href="../index.html" class="text-gray-700 hover:text-blue-600">View Site</a>
                 <a href="logout.php" class="text-gray-700 hover:text-red-600">Logout</a>
             </div>

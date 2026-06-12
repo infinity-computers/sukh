@@ -11,29 +11,29 @@
             <div class="footer-col links-col">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#home">Home</a></li>
                     <li><a href="properties.php">Properties</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
                     <li><a href="company_profile.html" target="_blank">📄 Company Profile</a></li>
                 </ul>
             </div>
             <div class="footer-col services-col">
                 <h4>Our Services</h4>
                 <ul>
-                    <li><a href="#services">Buy Property</a></li>
-                    <li><a href="#services">Sell Property</a></li>
-                    <li><a href="#services">Rental Services</a></li>
-                    <li><a href="#services">Consultation</a></li>
+                    <li><a href="index.html#services">Buy Property</a></li>
+                    <li><a href="index.html#services">Sell Property</a></li>
+                    <li><a href="index.html#services">Rental Services</a></li>
+                    <li><span class="footer-static-text">Assistance for rent agreement, notarisation and police verification</span></li>
                 </ul>
             </div>
             <div class="footer-col contact-col">
                 <h4>Contact</h4>
-                <p>📍 Zadeshwar, Bharuch, Gujarat</p>
-                <p><a href="tel:919376739237">📞 Call Sukhdham Estate</a></p>
-                <p><a href="https://wa.me/919376739237" target="_blank" rel="noopener">💬 WhatsApp Sukhdham Estate</a></p>
-                <p>✉️ bharuch@sukhdham.in</p>
+                <p class="footer-contact-line">📍 Zadeshwar, Bharuch, Gujarat</p>
+                <p class="footer-contact-line"><a href="tel:919376739237">📞 Call Sukhdham Estate</a></p>
+                <p class="footer-contact-line"><a href="https://wa.me/919376239237" target="_blank" rel="noopener">🟢 WhatsApp Sukhdham Estate</a></p>
+                <p class="footer-contact-line">✉️ bharuch@sukhdham.in</p>
             </div>
         </div>
         <div class="footer-bottom">

@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS property_bookings (
   property_id INT NOT NULL,
   name VARCHAR(255) NOT NULL,
   phone VARCHAR(30) NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) DEFAULT NULL,
   visit_date DATE NOT NULL,
   visit_time TIME NOT NULL,
   message TEXT,
@@ -98,3 +98,4 @@ CREATE TABLE IF NOT EXISTS otp_verification (
 -- Insert default admin
 INSERT IGNORE INTO admins (email) VALUES ('rathorjatin70@gmail.com');
 INSERT IGNORE INTO admins (email) VALUES ('pacifier2204@gmail.com');
+INSERT IGNORE INTO admins (email) VALUES ('bharuch@sukhdham.in');
