@@ -693,7 +693,12 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                 </form>
 
                 <div class="urgent-panel" id="urgentBookingPanel" style="display:none;">
-                    <p style="margin:0;"><?php echo htmlspecialchars($urgent_visit_text); ?></p>
+                    <div style="background:#fff8f0;border:1px solid #f5e6d3;border-radius:8px;padding:1rem;">
+                        <p style="margin:0 0 0.5rem;font-weight:600;color:#9a3412;">Urgent Site Visit</p>
+                        <p style="margin:0 0 0.5rem;color:#333;">Urgent site visit requested. Please contact our office or visit our shop for an immediate slot.</p>
+                        <p style="margin:0 0 0.5rem;color:#333;">A booking token of Rs. 500 is payable at the office and will be adjusted in the final rent if the property is booked through Sukhdham Estate.</p>
+                        <p style="margin:0;color:#333;"><strong>Office Address:</strong> <?php echo htmlspecialchars($contact_location); ?></p>
+                    </div>
                 </div>
             </div>
         </div>

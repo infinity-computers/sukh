@@ -1061,6 +1061,13 @@ nav a:hover {
     line-height: 1.6;
 }
 
+.footer-dark .whatsapp-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
 .footer-dark .footer-grid {
     display: grid;
     grid-template-columns: 1fr;
