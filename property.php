@@ -133,7 +133,7 @@ $can_book = !empty($property['booking_enabled']) && ($property['property_status'
 $contact_phone = '+91 9376739237';
 $contact_whatsapp = '919376739237';
 $contact_email = 'bharuch@sukhdham.in';
-$contact_location = 'Zadeshwar, Bharuch, Gujarat';
+$contact_location = 'Sukhdham Estate Agency, Shop no 6, Jashu Patel park Shopping Nr, Water tank, Ramvatika Society, Zadeshwar, Bharuch, Gujarat 392011, India';
 $contact_phone_href = preg_replace('/\D+/', '', $contact_phone);
 $booking_min_date = (new DateTime('today'))->modify('+1 day')->format('Y-m-d');
 $booking_max_date = (new DateTime('today'))->modify('+2 months')->format('Y-m-d');
@@ -693,10 +693,6 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                 </form>
 
                 <div class="urgent-panel" id="urgentBookingPanel" style="display:none;">
-                    <h3 style="margin-bottom:0.35rem;color:#9a3412;font-size:1.1rem;font-weight:800;">Urgent Booking</h3>
-                    <p style="margin:0 0 0.65rem;">For an urgent site visit, please contact or visit our office directly.</p>
-                    <p style="margin:0 0 0.65rem;"><strong>Office Address:</strong> <?php echo htmlspecialchars($contact_location); ?></p>
-                    <p style="margin:0 0 0.65rem;"><strong>Booking Amount:</strong> Rs. 500 payable at the office. This amount will be adjusted in your final rent if you book through our services.</p>
                     <p style="margin:0;"><?php echo htmlspecialchars($urgent_visit_text); ?></p>
                 </div>
             </div>
