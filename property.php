@@ -719,6 +719,8 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
         function openBookingModal() {
             const modal = document.getElementById('bookingModal');
             const urgentPanel = document.getElementById('urgentBookingPanel');
+            const bookingForm = modal ? modal.querySelector('form') : null;
+            const modalHeader = modal ? modal.querySelector('.modal-header') : null;
             if (modal) {
                 modal.classList.add('open');
                 modal.setAttribute('aria-hidden', 'false');
@@ -726,11 +728,19 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
             if (urgentPanel) {
                 urgentPanel.style.display = 'none';
             }
+            if (bookingForm) {
+                bookingForm.style.display = 'block';
+            }
+            if (modalHeader) {
+                modalHeader.style.display = 'flex';
+            }
         }
 
         function openUrgentBookingModal() {
             const modal = document.getElementById('bookingModal');
             const urgentPanel = document.getElementById('urgentBookingPanel');
+            const bookingForm = modal ? modal.querySelector('form') : null;
+            const modalHeader = modal ? modal.querySelector('.modal-header') : null;
             if (modal) {
                 modal.classList.add('open');
                 modal.setAttribute('aria-hidden', 'false');
@@ -738,13 +748,31 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
             if (urgentPanel) {
                 urgentPanel.style.display = 'block';
             }
+            if (bookingForm) {
+                bookingForm.style.display = 'none';
+            }
+            if (modalHeader) {
+                modalHeader.style.display = 'none';
+            }
         }
 
         function closeBookingModal() {
             const modal = document.getElementById('bookingModal');
+            const urgentPanel = document.getElementById('urgentBookingPanel');
+            const bookingForm = modal ? modal.querySelector('form') : null;
+            const modalHeader = modal ? modal.querySelector('.modal-header') : null;
             if (modal) {
                 modal.classList.remove('open');
                 modal.setAttribute('aria-hidden', 'true');
+            }
+            if (urgentPanel) {
+                urgentPanel.style.display = 'none';
+            }
+            if (bookingForm) {
+                bookingForm.style.display = 'block';
+            }
+            if (modalHeader) {
+                modalHeader.style.display = 'flex';
             }
         }
 
