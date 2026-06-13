@@ -491,8 +491,9 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
 
     <main>
         <div class="container page-shell">
-            <a href="properties.php" class="back-link" style="display:inline-flex;align-items:center;gap:0.35rem;color:#475569;font-weight:700;margin-bottom:1rem;">← Back to Properties</a>
+            
 
+        
             <?php if ($booking_success): ?>
                 <div class="message-card">
                     <h3 style="margin-bottom:0.25rem;color:#0f172a;">Booking Confirmed</h3>
@@ -655,11 +656,11 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
 
                     <div class="form-grid">
                         <div>
-                            <label style="display:block;font-weight:700;margin-bottom:0.35rem;color:#334155;">Full Name</label>
+                            <label style="display:block;font-weight:700;margin-bottom:0.35rem;color:#334155;">Name</label>
                             <input type="text" name="name" required>
                         </div>
                         <div>
-                            <label style="display:block;font-weight:700;margin-bottom:0.35rem;color:#334155;">Phone Number</label>
+                            <label style="display:block;font-weight:700;margin-bottom:0.35rem;color:#334155;">Contact</label>
                             <input type="tel" name="phone" required>
                         </div>
                     </div>
