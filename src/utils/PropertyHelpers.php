@@ -42,6 +42,13 @@ if (!function_exists('sukhdham_facing_options')) {
     }
 }
 
+if (!function_exists('sukhdham_food_preference_options')) {
+    function sukhdham_food_preference_options()
+    {
+        return ['Veg', 'Non Veg', 'Both'];
+    }
+}
+
 if (!function_exists('sukhdham_tenant_preferred_options')) {
     function sukhdham_tenant_preferred_options()
     {
@@ -143,6 +150,12 @@ if (!function_exists('sukhdham_normalize_property_form')) {
             'East'
         );
 
+        $foodPreference = sukhdham_normalize_selection(
+            $post['food_preference'] ?? 'Both',
+            sukhdham_food_preference_options(),
+            'Both'
+        );
+
         $tenantPreferred = sukhdham_normalize_selection(
             $post['tenant_preferred'] ?? 'Any',
             sukhdham_tenant_preferred_options(),
@@ -183,6 +196,7 @@ if (!function_exists('sukhdham_normalize_property_form')) {
             'water_supply' => $waterSupply,
             'electricity_backup' => sukhdham_normalize_yes_no($post['electricity_backup'] ?? 'No'),
             'facing_direction' => $facingDirection,
+            'food_preference' => $foodPreference,
             'amenities' => json_encode($amenities, JSON_UNESCAPED_UNICODE),
             'tenant_preferred' => $tenantPreferred,
             'lease_duration' => trim((string) ($post['lease_duration'] ?? '')),

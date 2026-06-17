@@ -139,7 +139,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['action'])) {
     } else {
         $title = generatePropertyTitle($form['property_type'], $form['category'], $form['bedrooms']);
 
-        $stmt = $conn->prepare("\n            UPDATE properties\n            SET\n                title = ?,\n                description = ?,\n                address = ?,\n                price = ?,\n                security_deposit = ?,\n                maintenance_charges = ?,\n                available_from = ?,\n                furnishing_type = ?,\n                bedrooms = ?,\n                bathrooms = ?,\n                balconies = ?,\n                floor_number = ?,\n                total_floors = ?,\n                area_sqft = ?,\n                carpet_area = ?,\n                parking = ?,\n                water_supply = ?,\n                electricity_backup = ?,\n                facing_direction = ?,\n                property_type = ?,\n                category = ?,\n                property_status = ?,\n                booking_enabled = ?,\n                amenities = ?,\n                tenant_preferred = ?,\n                lease_duration = ?,\n                available_immediately = ?,\n                bills_included = ?,\n                pets_allowed = ?,\n                washroom_available = ?,\n                pantry_available = ?,\n                cabin_count = ?,\n                parking_spaces = ?\n            WHERE id = ? AND admin_id = ?\n        ");
+        $stmt = $conn->prepare("
+            UPDATE properties
+            SET
+                title = ?,
+                description = ?,
+                address = ?,
+                price = ?,
+                security_deposit = ?,
+                maintenance_charges = ?,
+                available_from = ?,
+                furnishing_type = ?,
+                bedrooms = ?,
+                bathrooms = ?,
+                balconies = ?,
+                floor_number = ?,
+                total_floors = ?,
+                area_sqft = ?,
+                carpet_area = ?,
+                parking = ?,
+                water_supply = ?,
+                electricity_backup = ?,
+                facing_direction = ?,
+                food_preference = ?,
+                property_type = ?,
+                category = ?,
+                property_status = ?,
+                booking_enabled = ?,
+                amenities = ?,
+                tenant_preferred = ?,
+                lease_duration = ?,
+                available_immediately = ?,
+                bills_included = ?,
+                pets_allowed = ?,
+                washroom_available = ?,
+                pantry_available = ?,
+                cabin_count = ?,
+                parking_spaces = ?
+            WHERE id = ? AND admin_id = ?
+        ");
 
         if (!$stmt) {
             die('Prepare failed: ' . $conn->error);
@@ -165,6 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['action'])) {
             $form['water_supply'],
             $form['electricity_backup'],
             $form['facing_direction'],
+            $form['food_preference'],
             $form['property_type'],
             $form['category'],
             $form['property_status'],
@@ -183,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['action'])) {
             $admin_id,
         ];
 
-        $types = 'sssdddss' . 'iiiiii' . 'd' . 'ssss' . 'sss' . 'i' . 'ssssssss' . 'iiii';
+        $types = 'sssdddss' . 'iiiiii' . 'd' . 'sssss' . 'sss' . 'i' . 'ssssssss' . 'iiii';
         sukhdham_bind_stmt_values($stmt, $types, $bindValues);
 
         $deleted_image_ids = [];
@@ -372,6 +411,7 @@ function edit_selected_attr($current, $value)
                 <div><label class="block text-gray-700 font-medium mb-2">Water Supply</label><select name="water_supply" class="w-full px-4 py-2 border rounded-lg"><?php foreach (sukhdham_water_supply_options() as $item): ?><option value="<?php echo htmlspecialchars($item); ?>" <?php echo edit_selected_attr($property['water_supply'] ?? '24 Hours', $item); ?>><?php echo htmlspecialchars($item); ?></option><?php endforeach; ?></select></div>
                 <div><label class="block text-gray-700 font-medium mb-2">Electricity Backup</label><select name="electricity_backup" class="w-full px-4 py-2 border rounded-lg"><option value="Yes" <?php echo edit_selected_attr($property['electricity_backup'] ?? 'No', 'Yes'); ?>>Yes</option><option value="No" <?php echo edit_selected_attr($property['electricity_backup'] ?? 'No', 'No'); ?>>No</option></select></div>
                 <div><label class="block text-gray-700 font-medium mb-2">Facing Direction</label><select name="facing_direction" class="w-full px-4 py-2 border rounded-lg"><?php foreach (sukhdham_facing_options() as $item): ?><option value="<?php echo htmlspecialchars($item); ?>" <?php echo edit_selected_attr($property['facing_direction'] ?? 'East', $item); ?>><?php echo htmlspecialchars($item); ?></option><?php endforeach; ?></select></div>
+                <div><label class="block text-gray-700 font-medium mb-2">Food Preference</label><select name="food_preference" class="w-full px-4 py-2 border rounded-lg"><?php foreach (sukhdham_food_preference_options() as $item): ?><option value="<?php echo htmlspecialchars($item); ?>" <?php echo edit_selected_attr($property['food_preference'] ?? 'Both', $item); ?>><?php echo htmlspecialchars($item); ?></option><?php endforeach; ?></select></div>
             </div>
         </section>
 

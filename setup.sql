@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS properties (
   pantry_available ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
   cabin_count INT DEFAULT 0,
   parking_spaces INT DEFAULT 0,
+  food_preference ENUM('Veg', 'Non Veg', 'Both') NOT NULL DEFAULT 'Both',
   status ENUM('active', 'inactive') DEFAULT 'active',
   is_featured BOOLEAN DEFAULT FALSE,
   primary_image_id INT,
@@ -99,3 +100,4 @@ CREATE TABLE IF NOT EXISTS otp_verification (
 INSERT IGNORE INTO admins (email) VALUES ('rathorjatin70@gmail.com');
 INSERT IGNORE INTO admins (email) VALUES ('pacifier2204@gmail.com');
 INSERT IGNORE INTO admins (email) VALUES ('bharuch@sukhdham.in');
+INSERT IGNORE INTO admins (email) VALUES ('sukhdham.in@gmail.com');

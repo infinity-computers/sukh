@@ -132,6 +132,66 @@ class Mailer {
 
         return true;
     }
+
+    public static function sendPropertyInquiry(array $details)
+    {
+        $subject = 'New Property Inquiry - ' . ($details['property_title'] ?? 'Sukhdham Estate');
+        $to = $details['to'] ?? 'bharuch@sukhdham.in';
+        $submittedAt = date('Y-m-d H:i:s');
+
+        $html = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #1f2937; }
+                .container { max-width: 640px; margin: 0 auto; background-color: #ffffff; padding: 24px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+                .header { margin-bottom: 18px; }
+                .title { margin: 0; color: #c2410c; }
+                .section { margin-top: 18px; padding-top: 18px; border-top: 1px solid #e5e7eb; }
+                .row { margin: 8px 0; }
+                .label { font-weight: bold; color: #111827; }
+                .note { background: #fff7ed; padding: 14px 16px; border-radius: 8px; margin-top: 16px; color: #9a3412; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2 class='title'>New Property Inquiry</h2>
+                    <p>A visitor has submitted a property inquiry from the Sukhdham website.</p>
+                </div>
+
+                <div class='section'>
+                    <div class='row'><span class='label'>Name:</span> " . htmlspecialchars($details['name'] ?? '-') . "</div>
+                    <div class='row'><span class='label'>Phone:</span> " . htmlspecialchars($details['phone'] ?? '-') . "</div>
+                    <div class='row'><span class='label'>Email:</span> " . htmlspecialchars($details['email'] ?? 'Not provided') . "</div>
+                </div>
+
+                <div class='section'>
+                    <div class='row'><span class='label'>Property:</span> " . htmlspecialchars($details['property_title'] ?? '-') . "</div>
+                    <div class='row'><span class='label'>Address:</span> " . htmlspecialchars($details['property_address'] ?? '-') . "</div>
+                </div>
+
+                <div class='section'>
+                    <div class='row'><span class='label'>Message:</span></div>
+                    <div class='row'>" . nl2br(htmlspecialchars($details['message'] ?? '-')) . "</div>
+                </div>
+
+                <div class='note'>Inquiry submitted at " . $submittedAt . ". Please contact the customer directly.</div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        self::sendHtmlMail(
+            $to,
+            $subject,
+            $html,
+            'Property inquiry notification generated at ' . $submittedAt,
+            'property_inquiry_' . preg_replace('/[^a-zA-Z0-9]/', '_', (string) ($details['name'] ?? 'guest')) . '.txt'
+        );
+
+        return true;
+    }
 }
 
 ?>

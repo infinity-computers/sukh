@@ -32,7 +32,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $admin_id = (int) $_SESSION['admin_id'];
         $title = generatePropertyTitle($form['property_type'], $form['category'], $form['bedrooms']);
 
-        $stmt = $conn->prepare("\n            INSERT INTO properties\n            (\n                admin_id,\n                title,\n                description,\n                address,\n                price,\n                security_deposit,\n                maintenance_charges,\n                available_from,\n                furnishing_type,\n                bedrooms,\n                bathrooms,\n                balconies,\n                floor_number,\n                total_floors,\n                area_sqft,\n                carpet_area,\n                parking,\n                water_supply,\n                electricity_backup,\n                facing_direction,\n                property_type,\n                category,\n                property_status,\n                booking_enabled,\n                amenities,\n                tenant_preferred,\n                lease_duration,\n                available_immediately,\n                bills_included,\n                pets_allowed,\n                washroom_available,\n                pantry_available,\n                cabin_count,\n                parking_spaces,\n                status\n            )\n            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n        ");
+        $stmt = $conn->prepare("
+            INSERT INTO properties
+            (
+                admin_id,
+                title,
+                description,
+                address,
+                price,
+                security_deposit,
+                maintenance_charges,
+                available_from,
+                furnishing_type,
+                bedrooms,
+                bathrooms,
+                balconies,
+                floor_number,
+                total_floors,
+                area_sqft,
+                carpet_area,
+                parking,
+                water_supply,
+                electricity_backup,
+                facing_direction,
+                food_preference,
+                property_type,
+                category,
+                property_status,
+                booking_enabled,
+                amenities,
+                tenant_preferred,
+                lease_duration,
+                available_immediately,
+                bills_included,
+                pets_allowed,
+                washroom_available,
+                pantry_available,
+                cabin_count,
+                parking_spaces,
+                status
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
 
         if (!$stmt) {
             die('Prepare failed: ' . $conn->error);
@@ -59,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $form['water_supply'],
             $form['electricity_backup'],
             $form['facing_direction'],
+            $form['food_preference'],
             $form['property_type'],
             $form['category'],
             $form['property_status'],
@@ -76,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'active',
         ];
 
-        $types = 'isssdddss' . 'iiiiii' . 'd' . 'ssss' . 'sss' . 'i' . 'ssssssss' . 'iis';
+        $types = 'isssdddss' . 'iiiiii' . 'd' . 'sssss' . 'sss' . 'i' . 'ssssssss' . 'iis';
         sukhdham_bind_stmt_values($stmt, $types, $bindValues);
 
         if ($stmt->execute()) {
@@ -228,6 +270,7 @@ function selected_attr($current, $value)
                     <div><label class="block text-gray-700 font-medium mb-2">Water Supply</label><select name="water_supply" class="w-full px-4 py-2 border rounded-lg"><?php foreach (sukhdham_water_supply_options() as $item): ?><option value="<?php echo htmlspecialchars($item); ?>" <?php echo selected_attr($selectedWater, $item); ?>><?php echo htmlspecialchars($item); ?></option><?php endforeach; ?></select></div>
                     <div><label class="block text-gray-700 font-medium mb-2">Electricity Backup</label><select name="electricity_backup" class="w-full px-4 py-2 border rounded-lg"><option>Yes</option><option selected>No</option></select></div>
                     <div><label class="block text-gray-700 font-medium mb-2">Facing Direction</label><select name="facing_direction" class="w-full px-4 py-2 border rounded-lg"><?php foreach (sukhdham_facing_options() as $item): ?><option value="<?php echo htmlspecialchars($item); ?>" <?php echo selected_attr($selectedDirection, $item); ?>><?php echo htmlspecialchars($item); ?></option><?php endforeach; ?></select></div>
+                    <div><label class="block text-gray-700 font-medium mb-2">Food Preference</label><select name="food_preference" class="w-full px-4 py-2 border rounded-lg"><?php foreach (sukhdham_food_preference_options() as $item): ?><option value="<?php echo htmlspecialchars($item); ?>" <?php echo selected_attr('Both', $item); ?>><?php echo htmlspecialchars($item); ?></option><?php endforeach; ?></select></div>
                 </div>
             </section>
 

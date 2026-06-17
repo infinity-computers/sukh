@@ -47,6 +47,44 @@ $allowed_time_slots = [
     '15:00:00' => '03:00 PM - 04:00 PM',
 ];
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_inquiry') {
+    header('Content-Type: application/json');
+    $name = trim($_POST['name'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+    $inquiry_property_id = intval($_POST['property_id'] ?? 0);
+
+    $stmt = $conn->prepare('SELECT title, address FROM properties WHERE id = ? AND status = "active"');
+    $stmt->bind_param('i', $inquiry_property_id ?: $property_id);
+    $stmt->execute();
+    $inquiry_property = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$inquiry_property) {
+        echo json_encode(['success' => false, 'message' => 'Property not found.']);
+        exit;
+    }
+
+    if ($name === '' || $phone === '' || $message === '') {
+        echo json_encode(['success' => false, 'message' => 'Please fill in all required fields.']);
+        exit;
+    }
+
+    Mailer::sendPropertyInquiry([
+        'name' => $name,
+        'phone' => $phone,
+        'email' => $email,
+        'message' => $message,
+        'property_title' => $inquiry_property['title'] ?? 'Property',
+        'property_address' => $inquiry_property['address'] ?? '',
+        'to' => 'bharuch@sukhdham.in',
+    ]);
+
+    echo json_encode(['success' => true, 'message' => 'Your inquiry has been sent successfully. We will contact you soon.']);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'book_visit') {
     $form_property_id = intval($_POST['property_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
@@ -574,6 +612,7 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                             <div style="display:grid;gap:0.75rem;">
                                 <input type="text" id="inquiryName" placeholder="Your name">
                                 <input type="tel" id="inquiryPhone" placeholder="Phone number">
+                                <input type="email" id="inquiryEmail" placeholder="Email (optional)">
                                 <textarea id="inquiryMessage" placeholder="Tell us what you need"></textarea>
                                 <button type="button" class="btn" onclick="sendInquiry()">Send Inquiry</button>
                             </div>
@@ -780,10 +819,46 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
         function sendInquiry() {
             const name = document.getElementById('inquiryName').value.trim();
             const phone = document.getElementById('inquiryPhone').value.trim();
+            const email = document.getElementById('inquiryEmail').value.trim();
             const message = document.getElementById('inquiryMessage').value.trim();
-            const subject = encodeURIComponent('Property inquiry: <?php echo addslashes($property['title'] ?? 'Property'); ?>');
-            const body = encodeURIComponent(`Name: ${name || '-'}%0APhone: ${phone || '-'}%0AProperty: <?php echo addslashes($property['title'] ?? 'Property'); ?>%0AAddress: <?php echo addslashes($property['address'] ?? ''); ?>%0A%0AMessage: ${message || '-'}`);
-            window.open(`https://wa.me/<?php echo htmlspecialchars($contact_whatsapp); ?>?text=${body}`, '_blank', 'noopener');
+            const btn = document.querySelector('#inquiryForm button');
+
+            if (!name || !phone || !message) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            const formData = new FormData();
+            formData.append('action', 'send_inquiry');
+            formData.append('property_id', '<?php echo (int) $property_id; ?>');
+            formData.append('name', name);
+            formData.append('phone', phone);
+            formData.append('email', email);
+            formData.append('message', message);
+
+            fetch('', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.textContent = 'Send Inquiry';
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById('inquiryForm').reset();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(() => {
+                btn.disabled = false;
+                btn.textContent = 'Send Inquiry';
+                alert('Failed to send inquiry. Please try again.');
+            });
         }
 
         const modal = document.getElementById('bookingModal');

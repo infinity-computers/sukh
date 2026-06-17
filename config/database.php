@@ -166,8 +166,12 @@ function ensureSchema($conn)
             $conn->query("ALTER TABLE properties ADD COLUMN facing_direction ENUM('East', 'West', 'North', 'South') NOT NULL DEFAULT 'East' AFTER electricity_backup");
         }
 
+        if (!columnExists($conn, 'properties', 'food_preference')) {
+            $conn->query("ALTER TABLE properties ADD COLUMN food_preference ENUM('Veg', 'Non Veg', 'Both') NOT NULL DEFAULT 'Both' AFTER facing_direction");
+        }
+
         if (!columnExists($conn, 'properties', 'amenities')) {
-            $conn->query("ALTER TABLE properties ADD COLUMN amenities LONGTEXT NULL AFTER facing_direction");
+            $conn->query("ALTER TABLE properties ADD COLUMN amenities LONGTEXT NULL AFTER food_preference");
         }
 
         if (!columnExists($conn, 'properties', 'tenant_preferred')) {
@@ -224,6 +228,7 @@ function ensureSchema($conn)
     }
 
     $conn->query("INSERT IGNORE INTO admins (email) VALUES ('bharuch@sukhdham.in')");
+    $conn->query("INSERT IGNORE INTO admins (email) VALUES ('sukhdham.in@gmail.com')");
 
     $conn->query("UPDATE properties SET status = 'active' WHERE status IS NULL OR status = ''");
 }
