@@ -17,6 +17,7 @@
                     <li><a href="index.html#about">About</a></li>
                     <li><a href="index.html#contact">Contact</a></li>
                     <li><a href="company_profile.html" target="_blank">📄 Company Profile</a></li>
+                    <li><a href="admin/index.php">🔐 Admin Login</a></li>
                 </ul>
             </div>
             <div class="footer-col services-col">
