@@ -52,8 +52,8 @@ define('MAX_IMAGES_PER_PROPERTY', 10);
 define('ALLOWED_IMAGE_TYPES', ['jpg', 'jpeg', 'png', 'webp']);
 
 // reCAPTCHA Configuration
-define('RECAPTCHA_SITE_KEY', '6LcadY0sAAAAAJZIH1jS5M3spZQ9qRn05lF0oB6d');
-define('RECAPTCHA_SECRET_KEY', '6LcadY0sAAAAAE-ADcAzbPWGpJLAdi1oW2jLB4Qe');
+define('RECAPTCHA_SITE_KEY', '6Lee7SktAAAAAFYJd0acUhRNhjh8HUAldyb7t0p-');
+define('RECAPTCHA_SECRET_KEY', '6Lee7SktAAAAAEKv6Vdsnv23cRL0fKaejrbKbZ0H');
 
 // Create uploads directory if it doesn't exist
 if (!is_dir(UPLOAD_DIR)) {
