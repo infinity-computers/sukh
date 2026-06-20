@@ -347,6 +347,22 @@ function edit_selected_attr($current, $value)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Property - Sukhdham</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function onRecaptchaSuccess() {
+            const btn = document.getElementById('submitBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        function onRecaptchaExpired() {
+            const btn = document.getElementById('submitBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+    </script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body class="bg-gray-100">
@@ -513,11 +529,11 @@ function edit_selected_attr($current, $value)
         <?php endif; ?>
 
         <section>
-            <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>"></div>
+            <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>" data-callback="onRecaptchaSuccess" data-expired-callback="onRecaptchaExpired"></div>
         </section>
 
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition w-full sm:w-auto">Update Property</button>
+            <button type="submit" id="submitBtn" disabled class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition w-full sm:w-auto opacity-50 cursor-not-allowed">Update Property</button>
             <a href="dashboard.php" class="bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center w-full sm:w-auto">Cancel</a>
         </div>
     </form>
