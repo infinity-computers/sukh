@@ -51,6 +51,10 @@ define('MAX_IMAGE_SIZE', 5 * 1024 * 1024); // 5MB
 define('MAX_IMAGES_PER_PROPERTY', 10);
 define('ALLOWED_IMAGE_TYPES', ['jpg', 'jpeg', 'png', 'webp']);
 
+// reCAPTCHA Configuration
+define('RECAPTCHA_SITE_KEY', '6LcadY0sAAAAAJZIH1jS5M3spZQ9qRn05lF0oB6d');
+define('RECAPTCHA_SECRET_KEY', '6LcadY0sAAAAAE-ADcAzbPWGpJLAdi1oW2jLB4Qe');
+
 // Create uploads directory if it doesn't exist
 if (!is_dir(UPLOAD_DIR)) {
     mkdir(UPLOAD_DIR, 0755, true);

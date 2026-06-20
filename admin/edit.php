@@ -132,12 +132,21 @@ if ($primary_image_id === 0 && !empty($images)) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['action'])) {
-    $form = sukhdham_normalize_property_form($_POST);
+    // Verify reCAPTCHA
+    $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
+    $verify_url = "https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response=" . $recaptcha_response;
+    $response = @file_get_contents($verify_url);
+    $response_data = json_decode($response);
 
-    if ($form['address'] === '') {
-        $error = 'Address is required';
+    if (!$response_data || !$response_data->success) {
+        $error = 'Please complete the reCAPTCHA verification';
     } else {
-        $title = generatePropertyTitle($form['property_type'], $form['category'], $form['bedrooms']);
+        $form = sukhdham_normalize_property_form($_POST);
+
+        if ($form['address'] === '') {
+            $error = 'Address is required';
+        } else {
+            $title = generatePropertyTitle($form['property_type'], $form['category'], $form['bedrooms']);
 
         $stmt = $conn->prepare("
             UPDATE properties
@@ -320,6 +329,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['action'])) {
 
         $error = 'Failed to update property';
         $stmt->close();
+        }
     }
 }
 
@@ -337,6 +347,7 @@ function edit_selected_attr($current, $value)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Property - Sukhdham</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body class="bg-gray-100">
 <?php include __DIR__ . '/components/navbar.php'; ?>
@@ -500,6 +511,10 @@ function edit_selected_attr($current, $value)
                 <input type="hidden" name="deleted_image_ids" id="deletedImageIds" value="">
             </section>
         <?php endif; ?>
+
+        <section>
+            <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>"></div>
+        </section>
 
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition w-full sm:w-auto">Update Property</button>

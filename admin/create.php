@@ -24,11 +24,20 @@ $_SESSION['last_activity'] = $current_time;
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $form = sukhdham_normalize_property_form($_POST);
+    // Verify reCAPTCHA
+    $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
+    $verify_url = "https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response=" . $recaptcha_response;
+    $response = @file_get_contents($verify_url);
+    $response_data = json_decode($response);
 
-    if ($form['address'] === '') {
-        $error = 'Address is required';
+    if (!$response_data || !$response_data->success) {
+        $error = 'Please complete the reCAPTCHA verification';
     } else {
+        $form = sukhdham_normalize_property_form($_POST);
+
+        if ($form['address'] === '') {
+            $error = 'Address is required';
+        } else {
         $admin_id = (int) $_SESSION['admin_id'];
         $title = generatePropertyTitle($form['property_type'], $form['category'], $form['bedrooms']);
 
@@ -156,6 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $error = 'Failed to create property: ' . $stmt->error;
         $stmt->close();
+        }
     }
 }
 
@@ -180,6 +190,7 @@ function selected_attr($current, $value)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Property - Sukhdham</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body class="bg-gray-100">
     <?php include __DIR__ . '/components/navbar.php'; ?>
@@ -334,6 +345,10 @@ function selected_attr($current, $value)
                 <p class="text-gray-500 text-sm mb-2">Max 5MB per image</p>
                 <div id="imagePreview" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4"></div>
                 <input type="hidden" name="image_data" id="imageData">
+            </section>
+
+            <section>
+                <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>"></div>
             </section>
 
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
