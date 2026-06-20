@@ -66,6 +66,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_
         exit;
     }
 
+    // Verify reCAPTCHA
+    $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
+    $verify_url = "https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response=" . $recaptcha_response;
+    $response = @file_get_contents($verify_url);
+    $response_data = json_decode($response);
+
+    if (!$response_data || !$response_data->success) {
+        echo json_encode(['success' => false, 'message' => 'Please complete the reCAPTCHA verification.']);
+        exit;
+    }
+
     if ($name === '' || $phone === '' || $message === '') {
         echo json_encode(['success' => false, 'message' => 'Please fill in all required fields.']);
         exit;
@@ -103,9 +114,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'book_
         $booking_error = 'Property not found.';
     } elseif (empty($booking_property['booking_enabled']) || $booking_property['property_status'] !== 'available') {
         $booking_error = 'Booking is currently disabled for this property.';
-    } elseif ($name === '' || $phone === '' || $visit_date === '' || $visit_time === '') {
-        $booking_error = 'Please fill in all required booking fields.';
     } else {
+        // Verify reCAPTCHA
+        $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
+        $verify_url = "https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response=" . $recaptcha_response;
+        $response = @file_get_contents($verify_url);
+        $response_data = json_decode($response);
+
+        if (!$response_data || !$response_data->success) {
+            $booking_error = 'Please complete the reCAPTCHA verification.';
+        } elseif ($name === '' || $phone === '' || $visit_date === '' || $visit_time === '') {
+            $booking_error = 'Please fill in all required booking fields.';
+        } else {
         $today = new DateTime('today');
         $minDate = (clone $today)->modify('+1 day');
         $maxDate = (clone $today)->modify('+2 months');
@@ -191,6 +211,37 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
     <title><?php echo htmlspecialchars($property['title'] ?? 'Property Details'); ?> - Sukhdham Estate Agency</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script>
+        function onInquiryVerified() {
+            const btn = document.getElementById('inquirySubmitBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        function onInquiryExpired() {
+            const btn = document.getElementById('inquirySubmitBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        function onBookingVerified() {
+            const btn = document.getElementById('bookingSubmitBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        function onBookingExpired() {
+            const btn = document.getElementById('bookingSubmitBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         .page-shell {
             padding: 2rem 0 4rem;
@@ -347,9 +398,10 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
         }
         .booking-panel {
             padding: 1.2rem;
-            position: sticky;
-            top: 1.2rem;
+            position: relative;
         }
+        .opacity-50 { opacity: 0.5; }
+        .cursor-not-allowed { cursor: not-allowed; }
         .booking-panel .btn,
         .contact-panel .btn {
             width: 100%;
@@ -614,7 +666,10 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                                 <input type="tel" id="inquiryPhone" placeholder="Phone number">
                                 <input type="email" id="inquiryEmail" placeholder="Email (optional)">
                                 <textarea id="inquiryMessage" placeholder="Tell us what you need"></textarea>
-                                <button type="button" class="btn" onclick="sendInquiry()">Send Inquiry</button>
+                                <div style="margin: 0.5rem 0;">
+                                    <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>" data-callback="onInquiryVerified" data-expired-callback="onInquiryExpired"></div>
+                                </div>
+                                <button type="button" id="inquirySubmitBtn" disabled class="btn opacity-50 cursor-not-allowed" onclick="sendInquiry()">Send Inquiry</button>
                             </div>
                         </form>
 
@@ -729,7 +784,11 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
                         <textarea name="message" placeholder="Any specific requirements or preferences?"></textarea>
                     </div>
 
-                    <button type="submit" class="btn" style="margin-top:1rem;">Submit Booking Request</button>
+                    <div style="margin-top:0.9rem;">
+                        <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>" data-callback="onBookingVerified" data-expired-callback="onBookingExpired"></div>
+                    </div>
+
+                    <button type="submit" id="bookingSubmitBtn" disabled class="btn opacity-50 cursor-not-allowed" style="margin-top:1rem;">Submit Booking Request</button>
                 </form>
 
                 <div class="urgent-panel" id="urgentBookingPanel" style="display:none;">
@@ -837,7 +896,18 @@ $hasCommercialDetails = !empty($property['washroom_available']) || !empty($prope
             formData.append('name', name);
             formData.append('phone', phone);
             formData.append('email', email);
+            formData.append('email', email);
             formData.append('message', message);
+            
+            if (window.grecaptcha) {
+                const response = grecaptcha.getResponse(0); // Inquiry is first captcha
+                if (!response) {
+                   // Fallback if not found by index, find any resolved
+                   formData.append('g-recaptcha-response', grecaptcha.getResponse());
+                } else {
+                   formData.append('g-recaptcha-response', response);
+                }
+            }
 
             fetch('', {
                 method: 'POST',
