@@ -167,6 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'book_
         }
     }
 }
+}
 
 $stmt = $conn->prepare('SELECT * FROM property_images WHERE property_id = ? ORDER BY is_primary DESC, id ASC');
 $stmt->bind_param('i', $property_id);
